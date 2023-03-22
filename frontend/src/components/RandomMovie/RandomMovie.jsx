@@ -1,0 +1,169 @@
+import React, { useEffect } from "react";
+import { Container, Grid, Link, Typography } from "@mui/material";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+
+import Section from "../Section";
+import TrailerModal from "../TrailerModal";
+import details from "../../api/details";
+import { getHourAndMinute } from "../../utils/date";
+import { blue } from "@mui/material/colors";
+
+const styles = {
+  primary: {
+    color: blue[500],
+  },
+};
+
+const RandomMovie = ({ movie, genres }) => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <Section
+      id="recommend"
+      bgImage={"https://image.tmdb.org/t/p/original" + movie?.backdrop_path}
+      height="100vh"
+      opacity={0.3}
+    >
+      <Container maxWidth="m">
+        <Typography
+          variant="h6"
+          component="h6"
+          sx={{
+            color: styles.primary.color,
+            fontSize: "26px",
+            fontWeight: "800",
+          }}
+          mb={2}
+        >
+          {movie?.title}
+        </Typography>
+
+        <Typography
+          variant="h2"
+          component="h1"
+          sx={{ color: "#fff", fontWeight: "700" }}
+          mb={2}
+        >
+          Book your movie ticket now!
+        </Typography>
+
+        <Grid
+          container
+          sx={{
+            width: "100%",
+            height: "50px",
+            fontSize: "14px",
+            fontWeight: "700",
+          }}
+        >
+          <Grid item sx={{ width: "max-content" }} mr={2}>
+            <span className="movie-details pegi">
+              {details(movie?.id)?.status}
+            </span>
+          </Grid>
+          <Grid item sx={{ width: "max-content" }} mr={2}>
+            <span className="movie-details quality">4K</span>
+          </Grid>
+          <Grid item sx={{ width: "max-content" }} mr={2}>
+            <span className="movie-details">
+              {movie?.genre_ids
+                .map((genreId) => {
+                  return genres.find((genre) => genre.id === genreId).name;
+                })
+                .join(", ")}
+            </span>
+          </Grid>
+          <Grid item sx={{ width: "max-content" }} mr={1}>
+            <span className="movie-details">
+              <CalendarMonthIcon sx={{ fontSize: "18px" }} />
+              {movie?.release_date.slice(0, 4)}
+            </span>
+          </Grid>
+          <Grid item sx={{ width: "max-content" }} mr={1}>
+            <span className="movie-details">
+              <ScheduleIcon sx={{ fontSize: "18px" }} />
+              {getHourAndMinute(details(movie?.id)?.runtime)}
+            </span>
+          </Grid>
+        </Grid>
+
+        <Grid
+          container
+          sx={{
+            width: "100%",
+            height: "50px",
+            mt: 2,
+          }}
+        >
+          <Grid item mr={2}>
+            <Link
+              href="/movies/1"
+              underline="none"
+              sx={{
+                color: "#fff",
+                fontSize: "20px",
+                fontWeight: "600",
+                backgroundColor: styles.primary.color,
+                padding: "10px",
+                borderRadius: "5px",
+                transition: "all 0.3s ease-in-out",
+                gap: "3px",
+                width: "max-content",
+
+                ["&:hover"]: {
+                  backgroundColor: "#fff",
+                  color: styles.primary.color,
+                },
+              }}
+            >
+              <ConfirmationNumberIcon
+                sx={{ verticalAlign: "sub", marginRight: "4px" }}
+              />
+              Buy Ticket
+            </Link>
+          </Grid>
+          {movie && movie.youtubeUrl && (
+            <Grid item mr={2}>
+              <Link
+                underline="none"
+                sx={{
+                  color: "#fff",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  border: "2px solid " + styles.primary.color,
+                  padding: "8px 10px",
+                  borderRadius: "5px",
+                  transition: "all 0.3s ease-in-out",
+                  cursor: "pointer",
+                  ["&:hover"]: {
+                    backgroundColor: "#fff",
+                    color: styles.primary.color,
+                  },
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setOpen(true);
+                }}
+              >
+                Watch Trailer
+              </Link>
+            </Grid>
+          )}
+        </Grid>
+      </Container>
+      {movie && movie.youtubeUrl && (
+        <TrailerModal
+          trailUrl={movie?.youtubeUrl}
+          open={open}
+          handleClose={() => {
+            setOpen(false);
+          }}
+        />
+      )}
+    </Section>
+  );
+};
+
+export default RandomMovie;

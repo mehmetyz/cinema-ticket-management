@@ -5,6 +5,8 @@
     justify-content: space-around;
     align-items: center;
     height: 100%;
+    width: 70%;
+    padding: 20px;
 
 }
 
@@ -36,11 +38,11 @@
     gap: 10px;
 }
 
-.login-form-container row {
+.login-form-container div {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
     width: 100%;
     gap: 10px;
-}   
+}

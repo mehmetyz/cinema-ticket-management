@@ -15,7 +15,7 @@ const Footer = () => {
         sx={{
           height: "100%",
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "space-around",
           alignItems: "center",
           flexDirection: "column",
           pt: 8,
@@ -24,10 +24,11 @@ const Footer = () => {
         <Grid
           container
           spacing={4}
-          md={10}
           display="flex"
           justifyContent="space-between"
           alignItems="center"
+          pl={4}
+          pr={0}
         >
           <Grid item xs={12} sm={6} md={2}>
             <div className="logo">
@@ -41,11 +42,10 @@ const Footer = () => {
                   fontFamily: "Popins, sans-serif",
                 }}
               >
-                SQLFlix
+                SQLCinema
               </Typography>
             </div>
           </Grid>
-          {/* social media iconbuttons */}
           <Grid item xs={12} sm={12} md={3} display="flex" gap={2}>
             <Link
               href="https://www.facebook.com/"
@@ -113,9 +113,9 @@ const Footer = () => {
             </Link>
           </Grid>
         </Grid>
-        <Grid spacing={4}>
+        <Grid>
           <div>
-            &copy; {new Date().getFullYear()} SQLFlix. All rights reserved.
+            &copy; {new Date().getFullYear()} SQLCinema. All rights reserved.
           </div>
         </Grid>
       </Container>

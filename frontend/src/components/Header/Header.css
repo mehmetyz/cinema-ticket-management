@@ -143,15 +143,14 @@
     transition: all 0.3s ease-in-out;
 
     border-radius: 2px;
-    background-color: #119eba;
+    background-color: #045a6a;
     color: #f0f0f0;
     padding: 0.5rem 1.1rem;
 
 }
 
 .login-btn>a:hover {
-    color: #119eba;
-    background-color: #f0f0f0;
+    background-color: #05788d;
 
 }
 

@@ -13,7 +13,7 @@ const Section = ({ id, dark = false, bgImage, height, opacity, children }) => {
           className="section__bg"
           style={{
             backgroundImage: `url(${bgImage})`,
-            opacity: opacity ?? 0.5,
+            filter: `opacity(${opacity})`,
             height: height,
           }}
         />

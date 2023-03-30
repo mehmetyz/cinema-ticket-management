@@ -6,10 +6,8 @@ const getHourAndMinute = (runtime) => {
 };
 
 const getYear = (date) => {
-    const year = date.split('-')[0];
-    return year;
+  const year = date.split("-")[0];
+  return year;
 };
 
-
-
-export {getHourAndMinute, getYear};
+export { getHourAndMinute, getYear };

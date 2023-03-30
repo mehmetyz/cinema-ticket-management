@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Container, Grid, Link, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
@@ -18,7 +18,6 @@ const styles = {
 
 const RandomMovie = ({ movie, genres }) => {
   const [open, setOpen] = React.useState(false);
-
   return (
     <Section
       id="recommend"
@@ -60,11 +59,15 @@ const RandomMovie = ({ movie, genres }) => {
         >
           <Grid item sx={{ width: "max-content" }} mr={2}>
             <span className="movie-details pegi">
-              {details(movie?.id)?.status}
+              {details(
+                movie?.id
+              )?.spoken_languages[0].english_name.toUpperCase()}
             </span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={2}>
-            <span className="movie-details quality">4K</span>
+            <span className="movie-details quality">
+              {movie?.vote_average * 10}%
+            </span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={2}>
             <span className="movie-details">
@@ -99,7 +102,7 @@ const RandomMovie = ({ movie, genres }) => {
         >
           <Grid item mr={2}>
             <Link
-              href="/movies/1"
+              href={`/movie/${movie?.id}/buy`}
               underline="none"
               sx={{
                 color: "#fff",

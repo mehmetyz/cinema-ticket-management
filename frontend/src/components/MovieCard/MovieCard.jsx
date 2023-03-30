@@ -1,12 +1,14 @@
 import React from "react";
 
-import { Card, Grid, Link } from "@mui/material";
+import { Card, Grid, IconButton, Link } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import RemoveRedEye from "@mui/icons-material/RemoveRedEye";
-import { blue, purple } from "@mui/material/colors";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { blue, purple, deepOrange } from "@mui/material/colors";
 
 import { getYear } from "../../utils/date";
 import "./MovieCard.css";
+import details from "../../api/details";
 
 const MovieCard = ({ movie }) => {
   return (
@@ -31,21 +33,41 @@ const MovieCard = ({ movie }) => {
       <div className="movie-card-content">
         <h3>{movie.title}</h3>
         <ul className="movie-card-content-list">
+          <li>{getYear(movie.release_date)}</li>
+          <li>{movie.vote_average}</li>
           <li>
-            {getYear(movie.release_date)}
+            {details(
+              movie?.id
+            )?.spoken_languages[0]?.english_name?.toUpperCase()}
           </li>
-          <li>
-            {movie.vote_average}
-          </li>
-          
         </ul>
       </div>
 
       <Grid container spacing={2}>
+        ,
         <Grid item xs={12}>
           <div className="movie-card-layer">
+            <IconButton
+              sx={{
+                color: "#fff",
+                position: "absolute",
+                top: "20px",
+                right: "10px",
+                justifyContent: "center",
+                backgroundColor: deepOrange[600],
+                height: "30px",
+                width: "30px",
+
+                ["&:hover"]: {
+                  backgroundColor: deepOrange[500],
+                },
+              }}
+            >
+              <FavoriteIcon sx={{ fontSize: 20 }} />
+            </IconButton>
+
             <Link
-              href="/movies/1"
+              href={`/movies/${movie.id}`}
               underline="none"
               sx={{
                 color: "#fff",
@@ -71,7 +93,7 @@ const MovieCard = ({ movie }) => {
               View
             </Link>
             <Link
-              href="/movies/1"
+              href={`/movies/${movie.id}/buy`}
               underline="none"
               sx={{
                 fontSize: "15px",

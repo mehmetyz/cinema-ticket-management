@@ -1,39 +1,32 @@
-import React from "react";
+import React, { memo } from "react";
+import { useLocation } from "react-router-dom";
 
 import { Box, Container } from "@mui/system";
 import { Button, Divider, Grid, Link, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 import "./Header.css";
+import { useApplication } from "../../context";
+import UserHeader from "../UserHeader";
 
 const Header = () => {
-  const [isTransparent, setIsTransparent] = React.useState(true);
   const [search, setSearch] = React.useState("");
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 0) {
-        setIsTransparent(false);
-      } else {
-        setIsTransparent(true);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const context = useApplication();
+  const location = useLocation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!search) return;
 
-    window.location.href = `/all-movies?search=${search}`;
+    window.location.href = `/movies${search ? `?search=${search}` : ""}`;
   };
   return (
     <header>
-      <Box className={"sticky-header" + (isTransparent ? " transparent" : "")}>
+      <Box
+        className={
+          "sticky-header" + (context.isNavTransparent ? " transparent" : "")
+        }
+      >
         <Container maxWidth="m" sx={{ py: 2 }}>
           <Grid container spacing={4}>
             <Grid item xs={12} sm={6} md={2}>
@@ -48,11 +41,13 @@ const Header = () => {
                     fontFamily: "Popins, sans-serif",
                   }}
                 >
-                  SQLFlix
+                  <Link href="/" underline="none" color="inherit">
+                    SQLCinema
+                  </Link>
                 </Typography>
               </div>
             </Grid>
-            <Grid item xs={12} sm={6} md={9}>
+            <Grid item xs={12} sm={6} md={context.isAuth ? 8 : 9}>
               <div className="menu">
                 <ul>
                   <li>
@@ -61,8 +56,8 @@ const Header = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link className="nav-link" href="/new-movies">
-                      New Movies
+                    <Link className="nav-link" href="/movies">
+                      Movies
                     </Link>
                   </li>
                   <li>
@@ -107,12 +102,23 @@ const Header = () => {
               item
               xs={12}
               sm={6}
-              md={1}
-              sx={{ justifyContent: "flex-end" }}
+              md={context.isAuth ? 2 : 1}
+              justifyContent="center"
+              display="flex"
             >
-              <div className="login-btn">
-                <a href="/login">Login</a>
-              </div>
+              {context.isAuth ? (
+                <UserHeader />
+              ) : (
+                <div className="login-btn">
+                  <Link
+                    href={
+                      location.pathname === "/login" ? "/register" : "/login"
+                    }
+                  >
+                    {location.pathname === "/login" ? "Register" : "Login"}
+                  </Link>
+                </div>
+              )}
             </Grid>
           </Grid>
         </Container>
@@ -121,4 +127,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default memo(Header);

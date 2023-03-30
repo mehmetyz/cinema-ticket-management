@@ -6,14 +6,15 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import Section from "../Section";
 import MovieCard from "../MovieCard";
-import getMovieCount from "../../utils/resize";
+import { getMovieCount } from "../../utils/resize";
 import getMovie from "../../api/movie";
+import MovieList from "../MovieList";
 
 const styles = {
   primary: {
     color: blue[300],
   },
-}
+};
 
 const PopularMovies = ({ genres }) => {
   const [movies, setMovies] = React.useState([]);
@@ -44,6 +45,18 @@ const PopularMovies = ({ genres }) => {
     );
     setMovies(currentMovies);
   }, [filter]);
+
+  useEffect(() => {
+    const resize = () => {
+      const count = getMovieCount();
+      setFilter({ count });
+    };
+    window.addEventListener("resize", resize);
+
+    return () => {
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
 
   return (
     <Section id="movies" height="200vh" bgImage="/bg.jpg" opacity={0.6}>
@@ -85,7 +98,6 @@ const PopularMovies = ({ genres }) => {
             justifyContent: "center",
             rowGap: "10px",
           }}
-          md={12}
           mb={10}
           mt={10}
         >
@@ -95,12 +107,13 @@ const PopularMovies = ({ genres }) => {
                 underline="none"
                 sx={{
                   color: "#fff",
-                  backgroundColor: filter.genre === genre.id && styles.primary.color,
+                  backgroundColor:
+                    filter.genre === genre.id && styles.primary.color,
                   fontSize: "14px",
                   fontWeight: "600",
                   letterSpacing: "1px",
                   transition: "all 0.3s ease-in-out",
-                  border: "2px solid "+ styles.primary.color,
+                  border: "2px solid " + styles.primary.color,
                   borderRadius: "5px",
                   padding: "10px",
                   ["&:hover"]: {
@@ -117,77 +130,11 @@ const PopularMovies = ({ genres }) => {
             </Grid>
           ))}
         </Grid>
-        <Grid
-          container
-          maxWidth="m"
-          sx={{
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            heigth: "auto",
-            maxHeight: "90%",
-            display: "flex",
-            flexWrap: "wrap",
-            rowGap: "30px",
-            columnGap: "15px",
-            overflow: "auto",
-
-            ["&::-webkit-scrollbar"]: {
-              width: "0.4em",
-            },
-            ["&::-webkit-scrollbar-track"]: {
-              boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-              webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-            },
-            ["&::-webkit-scrollbar-thumb"]: {
-              backgroundColor: "rgba(0,0,0,.1)",
-              outline: "1px solid slategrey",
-            },
-          }}
-        >
-          {movies.slice(0, getMovieCount()).map((movie) => (
-            <MovieCard movie={movie} key={movie.id} />
-          ))}
-        </Grid>
-
-        <Grid
-          container
-          sx={{
-            width: "100%",
-            height: "50px",
-            mt: 2,
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-          md={12}
-        >
-          <Link
-            href={`/movies?genre=${filter.genre}`}
-            underline="none"
-            sx={{
-              color: "#fff",
-              fontSize: "15px",
-              backgroundColor: blue[700],
-              padding: "8px",
-              borderRadius: "5px",
-              transition: "all 0.3s ease-in-out",
-              textAlign: "center",
-              height: "max-content",
-              gap: "5px",
-              ["&:hover"]: {
-                backgroundColor: blue[500],
-              },
-
-              display: "flex",
-              alignItems: "center",
-            }}
-            mr={4}
-            mt={4}
-          >
-            <ArrowForwardIosIcon sx={{ fontSize: "15px" }} />
-            Load More
-          </Link>
-        </Grid>
+        <MovieList
+          movies={movies}
+          pagination={{ count: getMovieCount() }}
+          genre={filter.genre}
+        />
       </Container>
     </Section>
   );

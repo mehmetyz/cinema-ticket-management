@@ -1,9 +1,8 @@
 import React from "react";
 
-import { Avatar, Grid, Button, Typography } from "@mui/material";
+import { Button, Grid, Typography, Avatar } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { blue } from "@mui/material/colors";
-import { useApplication } from "../../context";
 
 const styles = {
   primary: {
@@ -11,8 +10,7 @@ const styles = {
     dark: "#2f3439",
   },
 };
-const Login = () => {
-  const context = useApplication();
+const Register = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
   };
@@ -29,7 +27,7 @@ const Login = () => {
           justifyContent: "flex-start",
           boxShadow: "0 0 10px 0 rgba(0, 0, 0, 0.8)",
           borderRadius: 5,
-          background: styles.primary.dark,
+          backgroundColor: styles.primary.dark,
           gap: 3,
         }}
       >
@@ -48,12 +46,13 @@ const Login = () => {
               fontSize: "2rem",
             }}
           >
-            Login
+            Register
           </Typography>
         </div>
         <div className="login-form-container">
           <form onSubmit={handleSubmit} noValidate>
-            <input type="text" placeholder="Email" autoFocus />
+            <input type="text" placeholder="Full Name" autoFocus />
+            <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <div>
               <Button
@@ -62,7 +61,7 @@ const Login = () => {
                 color="primary"
                 sx={{ width: "100%", fontWeight: "600" }}
               >
-                Login
+                Register
               </Button>
               <Button
                 type="submit"
@@ -73,9 +72,9 @@ const Login = () => {
                   color: styles.primary.color,
                   border: "1px solid transparent",
                 }}
-                href="/register"
+                href="/login"
               >
-                Need An Account?
+                Have an account?
               </Button>
             </div>
           </form>
@@ -85,4 +84,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

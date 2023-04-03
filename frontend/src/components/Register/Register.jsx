@@ -51,7 +51,7 @@ const Register = () => {
         </div>
         <div className="login-form-container">
           <form onSubmit={handleSubmit} noValidate>
-            <input type="text" placeholder="Full Name" autoFocus />
+            <input type="text" placeholder="Username" autoFocus />
             <input type="text" placeholder="Email" />
             <input type="password" placeholder="Password" />
             <div>

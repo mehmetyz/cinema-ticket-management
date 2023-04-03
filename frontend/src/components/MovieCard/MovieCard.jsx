@@ -54,12 +54,12 @@ const MovieCard = ({ movie }) => {
                 top: "20px",
                 right: "10px",
                 justifyContent: "center",
-                backgroundColor: deepOrange[600],
+                backgroundColor: deepOrange[500],
                 height: "30px",
                 width: "30px",
 
                 ["&:hover"]: {
-                  backgroundColor: deepOrange[500],
+                  backgroundColor: deepOrange[700],
                 },
               }}
             >
@@ -74,7 +74,7 @@ const MovieCard = ({ movie }) => {
 
                 width: "70%",
                 fontSize: "15px",
-                backgroundColor: blue[700],
+                backgroundColor: blue[500],
                 padding: "8px",
                 borderRadius: "5px",
                 transition: "all 0.3s ease-in-out",
@@ -85,7 +85,7 @@ const MovieCard = ({ movie }) => {
                 alignItems: "center",
                 gap: "5px",
                 ["&:hover"]: {
-                  backgroundColor: blue[500],
+                  backgroundColor: blue[700],
                 },
               }}
             >
@@ -99,7 +99,7 @@ const MovieCard = ({ movie }) => {
                 fontSize: "15px",
                 width: "70%",
                 color: "#fff",
-                backgroundColor: purple[700],
+                backgroundColor: purple[500],
                 padding: "8px",
                 borderRadius: "5px",
                 textAlign: "center",
@@ -110,7 +110,7 @@ const MovieCard = ({ movie }) => {
                 alignItems: "center",
                 gap: "5px",
                 ["&:hover"]: {
-                  backgroundColor: purple[500],
+                  backgroundColor: purple[700],
                 },
               }}
             >

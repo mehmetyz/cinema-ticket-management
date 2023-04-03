@@ -19,7 +19,7 @@ import MovieDetails from "./pages/MovieDetails";
 function App() {
   const genres = genre();
   const [context, setContext] = React.useState({
-    isAuth: false,
+    isAuth: true,
     isNavTransparent: true,
     login: () => {
       setContext(

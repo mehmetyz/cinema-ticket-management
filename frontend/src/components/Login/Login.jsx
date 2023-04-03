@@ -53,7 +53,7 @@ const Login = () => {
         </div>
         <div className="login-form-container">
           <form onSubmit={handleSubmit} noValidate>
-            <input type="text" placeholder="Email" autoFocus />
+            <input type="text" placeholder="Username" autoFocus />
             <input type="password" placeholder="Password" />
             <div>
               <Button

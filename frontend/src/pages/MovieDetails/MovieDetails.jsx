@@ -1,10 +1,16 @@
-import { Button, Grid, Typography } from "@mui/material";
 import React from "react";
 import { useParams } from "react-router-dom";
+
+import { Button, Grid, Typography } from "@mui/material";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import getMovie from "../../api/movie";
 import Section from "../../components/Section";
 
 import "./MovieDetails.css";
+import { deepOrange, purple } from "@mui/material/colors";
+import { useApplication } from "../../context";
 
 const MovieDetails = () => {
   const path = useParams();
@@ -58,15 +64,40 @@ const MovieDetails = () => {
           >
             {movie?.overview}
           </Typography>
-        </Grid>
 
-        <Grid item xs={12} md={3}>
-          <Button variant="contained" color="primary">
-            Watch Now
-          </Button>
-          <Button variant="contained" color="primary">
-            Add to Watchlist
-          </Button>
+          <Grid display="flex" gap={2} pt={3}>
+            <Button
+              variant="contained"
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 600,
+                backgroundColor: purple[500],
+                maxWidth: "80%",
+                ["&:hover"]: {
+                  backgroundColor: purple[700],
+                },
+              }}
+              href={useApplication().isAuth ? "/checkout" : "/login"}
+            >
+              <ConfirmationNumberIcon sx={{ mr: 1 }} />
+              Buy Ticket
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 600,
+                backgroundColor: deepOrange[500],
+                maxWidth: "80%",
+                ["&:hover"]: {
+                  backgroundColor: deepOrange[700],
+                },
+              }}
+            >
+              <FavoriteIcon sx={{ mr: 1 }} />
+              Add Favorites
+            </Button>
+          </Grid>
         </Grid>
       </Grid>
     </Section>

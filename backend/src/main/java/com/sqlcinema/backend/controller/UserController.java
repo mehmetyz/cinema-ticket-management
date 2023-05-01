@@ -1,5 +1,6 @@
 package com.sqlcinema.backend.controller;
 
+import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.User;
 import com.sqlcinema.backend.model.UserAccount;
 import com.sqlcinema.backend.service.UserService;
@@ -26,8 +27,10 @@ public class UserController {
         }
         
         UserAccount userAccount = (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
-        if (userAccount.getUserId() != userId) {
+                                                
+        if ((userAccount.getRole() == Role.USER 
+                && userAccount.getUserId() != userId)
+                || userAccount.getRole() == Role.THEATRE_MANAGER) {
             return ResponseEntity.badRequest().build();
         }
         

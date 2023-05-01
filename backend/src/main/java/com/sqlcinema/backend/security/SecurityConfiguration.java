@@ -30,6 +30,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
+                .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(SIGN_UP_URL).permitAll()
@@ -45,7 +46,7 @@ public class SecurityConfiguration {
                 .logout().logoutUrl(LOGOUT_URL)
                 .addLogoutHandler(customLogoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    SecurityContextHolder.clearContext();
+//                    SecurityContextHolder.clearContext();
                     response.setStatus(200);
                 });
 

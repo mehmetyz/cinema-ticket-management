@@ -107,7 +107,7 @@ const Header = () => {
               display="flex"
             >
               {context.isAuth ? (
-                <UserHeader />
+                <UserHeader logout={context.logout} />
               ) : (
                 <div className="login-btn">
                   <Link

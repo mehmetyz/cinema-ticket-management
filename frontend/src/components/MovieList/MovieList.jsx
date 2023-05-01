@@ -22,7 +22,7 @@ const MovieList = ({ movies, genre, pagination, props }) => {
         justifyContent: "center",
         width: "100%",
         heigth: "auto",
-        maxHeight: "90%",
+        maxHeight: "80%",
         display: "flex",
         flexWrap: "wrap",
 

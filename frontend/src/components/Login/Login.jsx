@@ -13,8 +13,12 @@ const styles = {
 };
 const Login = () => {
   const context = useApplication();
+
+  const [username, setUsername] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const handleSubmit = (event) => {
     event.preventDefault();
+    context.login(username, password);
   };
   return (
     <>
@@ -53,8 +57,19 @@ const Login = () => {
         </div>
         <div className="login-form-container">
           <form onSubmit={handleSubmit} noValidate>
-            <input type="text" placeholder="Username" autoFocus />
-            <input type="password" placeholder="Password" />
+            <input
+              type="text"
+              placeholder="Username"
+              autoFocus
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+            />
             <div>
               <Button
                 type="submit"

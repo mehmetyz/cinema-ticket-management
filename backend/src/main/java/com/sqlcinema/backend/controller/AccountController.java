@@ -4,6 +4,7 @@ import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.UserAccount;
 import com.sqlcinema.backend.model.request.LoginRequest;
 import com.sqlcinema.backend.model.request.RegisterRequest;
+import com.sqlcinema.backend.model.response.LoginResponse;
 import com.sqlcinema.backend.service.JwtService;
 import com.sqlcinema.backend.service.UserAccountService;
 import lombok.AllArgsConstructor;
@@ -28,10 +29,10 @@ public class AccountController {
     private final UserAccountService userAccountService;
     private final PasswordEncoder passwordEncoder;
     private final Logger logger;
-    
-    
+
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
 
         UserAccount userAccount = userAccountService.getUserAccountByUsername(loginRequest.getUsername());
         
@@ -39,7 +40,12 @@ public class AccountController {
             badRequest().body("Invalid password");
         }
         userAccountService.loginUser(userAccount);
-        return ok(jwtService.generateToken(userAccount));
+        LoginResponse response = LoginResponse
+                .builder()
+                .token(jwtService.generateToken(userAccount))
+                .userId(userAccount.getUserId()).build();
+        
+        return ok(response);
     }
     
     @PostMapping("/register")

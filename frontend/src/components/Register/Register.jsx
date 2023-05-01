@@ -3,6 +3,7 @@ import React from "react";
 import { Button, Grid, Typography, Avatar } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { blue } from "@mui/material/colors";
+import { useApplication } from "../../context";
 
 const styles = {
   primary: {
@@ -11,8 +12,14 @@ const styles = {
   },
 };
 const Register = () => {
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const context = useApplication();
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    context.register(username, email, password);
   };
   return (
     <>
@@ -51,9 +58,9 @@ const Register = () => {
         </div>
         <div className="login-form-container">
           <form onSubmit={handleSubmit} noValidate>
-            <input type="text" placeholder="Username" autoFocus />
-            <input type="text" placeholder="Email" />
-            <input type="password" placeholder="Password" />
+            <input type="text" placeholder="Username" autoFocus onChange={(e) => setUsername(e.target.value)} value={username} />
+            <input type="text" placeholder="Email" onChange={(e) => setEmail(e.target.value)} value={email} />
+            <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} value={password} />
             <div>
               <Button
                 type="submit"

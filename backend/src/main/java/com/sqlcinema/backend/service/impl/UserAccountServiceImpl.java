@@ -26,6 +26,11 @@ public class UserAccountServiceImpl implements UserDetailsService, UserAccountSe
     }
 
     @Override
+    public UserAccount getUserAccountById(int userId) {
+        return userRepository.findUserAccountById(userId);
+    }
+
+    @Override
     public void loginUser(UserAccount userAccount) {
         userRepository.loginUser(userAccount.getUsername());
     }

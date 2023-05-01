@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 public class UserRepository {
     
     private final JdbcTemplate jdbcTemplate;
-    private final Logger logger = Logger.getLogger(UserRepository.class.getName());
     public UserAccount findUserAccountByUsername(String username) {
         UserAccount userAccount =  jdbcTemplate
                                     .queryForObject("SELECT ua.*, m.role FROM UserAccount ua " +
@@ -27,9 +26,14 @@ public class UserRepository {
             userAccount.setRole(Role.USER);
         }
         
-        logger.info("User account: " + userAccount);
         return userAccount;
     }
+
+    public UserAccount findUserAccountById(int userId) {
+        return jdbcTemplate.queryForObject("SELECT * FROM UserAccount WHERE user_id = ?",
+                new BeanPropertyRowMapper<>(UserAccount.class), userId);
+    }
+    
     
     public void registerUser(String email, String username, String password) {
         jdbcTemplate.update("CALL create_user(?, ?, ?)", username, email, password);
@@ -62,7 +66,6 @@ public class UserRepository {
                             "SET status = 'DELETED' " +
                             "WHERE user_id = ?", userId);
     }
-    
     
     public User findUserById(int userId) {
         return jdbcTemplate.queryForObject("SELECT * FROM User WHERE user_id = ?", 

@@ -1,6 +1,7 @@
 const getMovieCount = () => {
   const width = window.innerWidth;
-  return Math.floor(width / 208) * 3;
+  const height = window.innerHeight;
+  return Math.floor(width / 208) * (Math.floor(height / 200) - 1);
 };
 
 const calcPage = (page) => {

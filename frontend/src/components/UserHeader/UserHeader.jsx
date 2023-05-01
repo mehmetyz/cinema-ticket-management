@@ -12,6 +12,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ShopIcon from "@mui/icons-material/Shop";
 import StarIcon from "@mui/icons-material/Star";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { navigate } from "../../utils/navigate";
 
 const styles = {
   iconButton: {
@@ -32,12 +33,22 @@ const styles = {
   },
 };
 
-const UserHeader = () => {
+const UserHeader = ({ logout }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+  };
+
+  const handleUserProfile = () => {
+    navigate("/profile", 0);
+    handleClose();
   };
 
   const handleClose = () => {
@@ -105,14 +116,14 @@ const UserHeader = () => {
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem sx={styles.menuItem} onClick={handleClose}>
+            <MenuItem sx={styles.menuItem} onClick={handleUserProfile}>
               My account
             </MenuItem>
             <MenuItem sx={styles.menuItem} onClick={handleClose}>
               Favorites
               <StarIcon sx={{ ml: 1 }} />
             </MenuItem>
-            <MenuItem sx={styles.menuItem} onClick={handleClose}>
+            <MenuItem sx={styles.menuItem} onClick={handleLogout}>
               Logout
               <LogoutIcon sx={{ ml: 1 }} />
             </MenuItem>

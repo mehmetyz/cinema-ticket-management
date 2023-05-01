@@ -1,50 +1,43 @@
-package tech.mehmetyz.backend.model;
+package com.sqlcinema.backend.model;
 
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 
+@Data
+@Getter
+@ToString
 public class UserAccount implements UserDetails {
+    private int userId;
     private String username;
     private String password;
+    private UserAccountStatus status;
     private Role role;
-
-    public UserAccount(String username, String password, Role role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
-
+    private Date createdAt;
+    private Date lastLogin;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return role.getAuthorities();
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
+        return Collections.singleton(role);
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-
+        return false;
     }
 
     @Override

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import static com.sqlcinema.backend.common.Constants.JWT_TOKEN_HEADER;
 import static com.sqlcinema.backend.common.Constants.JWT_TOKEN_PREFIX;
@@ -29,8 +28,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
     @NonNull
     private final JwtService jwtService;
-    
-    private final Logger logger;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -43,9 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         final String token = header.replace(JWT_TOKEN_PREFIX, "");
-        logger.info("Token: " + token);
-        
-        
         if (!jwtService.validateToken(token)) {
             filterChain.doFilter(request, response);
             return;

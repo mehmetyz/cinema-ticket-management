@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -20,7 +19,6 @@ import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
-@Controller
 @AllArgsConstructor
 @RequestMapping("/api/account")
 public class AccountController {
@@ -30,7 +28,6 @@ public class AccountController {
     private final PasswordEncoder passwordEncoder;
     private final Logger logger;
 
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
 
@@ -39,6 +36,7 @@ public class AccountController {
         if (passwordEncoder.matches(loginRequest.getPassword(), userAccount.getPassword())) {
             badRequest().body("Invalid password");
         }
+        
         userAccountService.loginUser(userAccount);
         LoginResponse response = LoginResponse
                 .builder()

@@ -10,4 +10,9 @@ const getYear = (date) => {
   return year;
 };
 
-export { getHourAndMinute, getYear };
+
+const convertDate = (date) => {
+  return new Date(date);
+}
+
+export { getHourAndMinute, getYear , convertDate};

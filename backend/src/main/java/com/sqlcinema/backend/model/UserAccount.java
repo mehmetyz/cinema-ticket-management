@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.Date;
 
 @Data
-@Getter
-@ToString
 public class UserAccount implements UserDetails {
     private int userId;
     private String username;

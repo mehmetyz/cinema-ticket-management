@@ -1,10 +1,13 @@
 package com.sqlcinema.backend.config;
 
+import com.sqlcinema.backend.common.CustomLogger;
+import com.sqlcinema.backend.common.LogFileProcessor;
 import com.sqlcinema.backend.service.UserAccountService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -19,7 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.logging.Logger;
+import java.io.FileNotFoundException;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
@@ -28,30 +31,41 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKN
 @Order(2)
 public class ApplicationConfiguration {
     private final UserAccountService userAccountService;
-    
+
+    @Value("${logger.file.path}")
+    private String loggerFilePath;
+
     @Bean
-    public Logger logger() {
-        return Logger.getLogger(this.getClass().getPackageName());
+    public CustomLogger logger() {
+        LogFileProcessor processor;
+        try {
+            processor = new LogFileProcessor(loggerFilePath, objectMapper());
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return new CustomLogger(this.getClass().getPackageName(), null, processor);
     }
-    
+
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
         return source;
     }
-    
-    @Bean 
+
+    @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper;
-    } 
-    
+    }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -59,9 +73,10 @@ public class ApplicationConfiguration {
         provider.setPasswordEncoder(bCryptPasswordEncoder());
         return provider;
     }
-    
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }

@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Section from "../Section";
 import MovieCard from "../MovieCard";
 import { getMovieCount } from "../../utils/resize";
-import getMovie from "../../api/movie";
+import { getMovies } from "../../api/movie";
 import MovieList from "../MovieList";
 
 const styles = {
@@ -21,29 +21,30 @@ const PopularMovies = ({ genres }) => {
   const [filter, setFilter] = React.useState({ genre: 0 });
 
   useEffect(() => {
-    let currentMovies = getMovie();
-    if (filter && Object.keys(filter).length > 0) {
-      Object.keys(filter).forEach((key) => {
-        currentMovies = currentMovies.filter((movie) => {
-          if (key === "genre") {
-            if (filter[key] === 0) {
-              return (
-                !movie.genre_ids.includes(10749) &&
-                !movie.adult &&
-                movie.vote_count > 200
-              );
-            }
+    const setMovies = async () => {
+      let currentMovies = await getMovies();
+      if (filter && Object.keys(filter).length > 0) {
+        Object.keys(filter).forEach((key) => {
+          currentMovies = currentMovies.filter((movie) => {
+            if (key === "genre") {
+              if (filter[key] === 0) {
+                return (
+                  movie?.rating > 200
+                );
+              }
 
-            return movie.genre_ids.includes(filter[key]);
-          }
-          return movie[key] === filter[key];
+              return movie.genre.filter((genre) => genre.name === filter[key])
+            }
+            return movie[key] === filter[key];
+          });
         });
-      });
-    }
-    currentMovies = currentMovies.sort((a, b) =>
-      parseFloat(b.vote_average) - parseFloat(a.vote_average) > 0 ? 1 : -1
-    );
-    setMovies(currentMovies);
+      }
+      currentMovies = currentMovies.sort((a, b) =>
+        parseFloat(b.vote_average) - parseFloat(a.vote_average) > 0 ? 1 : -1
+      );
+      setMovies(currentMovies);
+    };
+    setMovies();
   }, [filter]);
 
   useEffect(() => {

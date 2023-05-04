@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Grid, Link, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
@@ -6,9 +6,9 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 
 import Section from "../Section";
 import TrailerModal from "../TrailerModal";
-import details from "../../api/details";
-import { getHourAndMinute } from "../../utils/date";
+import { convertDate, getHourAndMinute } from "../../utils/date";
 import { blue } from "@mui/material/colors";
+import { getRandomMovie } from "../../api/movie";
 
 const styles = {
   primary: {
@@ -16,12 +16,27 @@ const styles = {
   },
 };
 
-const RandomMovie = ({ movie, genres }) => {
+const RandomMovie = () => {
+  const [movie, setMovie] = React.useState(null);
   const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    const fetchRandomMovie = async () => {
+      const randomMovie = await getRandomMovie();
+      setMovie(randomMovie);
+    };
+
+    fetchRandomMovie();
+
+    return () => {
+      setMovie(null);
+    };
+  }, []);
+
   return (
     <Section
       id="recommend"
-      bgImage={"https://image.tmdb.org/t/p/original" + movie?.backdrop_path}
+      bgImage={"https://image.tmdb.org/t/p/original" + movie?.backdropPath}
       height="100vh"
       opacity={0.3}
     >
@@ -59,35 +74,27 @@ const RandomMovie = ({ movie, genres }) => {
         >
           <Grid item sx={{ width: "max-content" }} mr={2}>
             <span className="movie-details pegi">
-              {details(
-                movie?.id
-              )?.spoken_languages[0].english_name.toUpperCase()}
+              {movie?.language?.toUpperCase()}
             </span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={2}>
-            <span className="movie-details quality">
-              {movie?.vote_average * 10}%
-            </span>
+            <span className="movie-details quality">{movie?.rating * 10}%</span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={2}>
             <span className="movie-details">
-              {movie?.genre_ids
-                .map((genreId) => {
-                  return genres.find((genre) => genre.id === genreId).name;
-                })
-                .join(", ")}
+              {movie?.genres.map((genre) => genre.name).join(", ")}
             </span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={1}>
             <span className="movie-details">
               <CalendarMonthIcon sx={{ fontSize: "18px" }} />
-              {movie?.release_date.slice(0, 4)}
+              {convertDate(movie?.releaseDate).getFullYear()}
             </span>
           </Grid>
           <Grid item sx={{ width: "max-content" }} mr={1}>
             <span className="movie-details">
               <ScheduleIcon sx={{ fontSize: "18px" }} />
-              {getHourAndMinute(details(movie?.id)?.runtime)}
+              {getHourAndMinute(movie?.runtime)}
             </span>
           </Grid>
         </Grid>
@@ -127,7 +134,7 @@ const RandomMovie = ({ movie, genres }) => {
               Buy Ticket
             </Link>
           </Grid>
-          {movie && movie.youtubeUrl && (
+          {movie && movie.trailerLink && (
             <Grid item mr={2}>
               <Link
                 underline="none"
@@ -156,9 +163,9 @@ const RandomMovie = ({ movie, genres }) => {
           )}
         </Grid>
       </Container>
-      {movie && movie.youtubeUrl && (
+      {movie && movie.trailerLink && (
         <TrailerModal
-          trailUrl={movie?.youtubeUrl}
+          trailUrl={movie?.trailerLink}
           open={open}
           handleClose={() => {
             setOpen(false);

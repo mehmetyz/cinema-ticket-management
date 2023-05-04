@@ -3,7 +3,6 @@ package com.sqlcinema.backend.security;
 
 import com.sqlcinema.backend.security.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -15,7 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.sqlcinema.backend.common.Constants.*;
+import static com.sqlcinema.backend.common.Constants.LOGOUT_URL;
+import static com.sqlcinema.backend.common.Constants.getAnynomousEndpoints;
 
 @Configuration
 @EnableWebSecurity
@@ -33,9 +33,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers(SIGN_UP_URL).permitAll()
-                .requestMatchers(SIGN_IN_URL).permitAll()
-                .requestMatchers(LOGOUT_URL).permitAll()
+                .requestMatchers(getAnynomousEndpoints()).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
@@ -46,7 +44,7 @@ public class SecurityConfiguration {
                 .logout().logoutUrl(LOGOUT_URL)
                 .addLogoutHandler(customLogoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> {
-//                    SecurityContextHolder.clearContext();
+                    SecurityContextHolder.clearContext();
                     response.setStatus(200);
                 });
 

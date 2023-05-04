@@ -2,26 +2,31 @@ import React, { memo } from "react";
 import { Routes, Route } from "react-router-dom";
 import { produce } from "immer";
 
+import { Alert, Snackbar } from "@mui/material";
+
 import NoPage from "./pages/NoPage";
 import Authentication from "./pages/Authentication";
 import Home from "./pages/Home";
+import Movies from "./pages/Movies";
+import Profile from "./pages/Profile";
+import MovieDetails from "./pages/MovieDetails";
 
 import Header from "./components/Header";
 
-import genre from "./api/genre";
 import ApplicationContext from "./context";
 
-import "./App.css";
-import Movies from "./pages/Movies";
-import { handleScroll } from "./utils/resize";
-import MovieDetails from "./pages/MovieDetails";
+import { getGenres } from "./api/movie";
 import { getUser, login, logout, register } from "./api/user";
+
+import { handleScroll } from "./utils/resize";
 import { addItem, loadAuthToken, loadUser } from "./utils/localStorage";
-import { Alert, Snackbar } from "@mui/material";
 import { navigate } from "./utils/navigate";
 
+import "./App.css";
+import SqlLogger from "./pages/SqlLogger";
+
 function App() {
-  const genres = genre();
+  const [genres, setGenres] = React.useState([]);
   const [context, setContext] = React.useState({
     isAuth: loadAuthToken() && loadUser() ? true : false,
     isNavTransparent: true,
@@ -94,6 +99,14 @@ function App() {
   });
 
   React.useEffect(() => {
+    const fetchGenres = async () => {
+      const genres = await getGenres();
+      setGenres(genres);
+    };
+    fetchGenres();
+  }, []);
+
+  React.useEffect(() => {
     window.addEventListener("scroll", () =>
       handleScroll(window.scrollY > 0, context)
     );
@@ -108,6 +121,7 @@ function App() {
         <Header movieGenres={genres}></Header>
         <Routes>
           <Route path="/" element={<Home genres={genres} />} exact />
+          <Route path="/sql" element={<SqlLogger />} />
           <Route
             path="/login"
             element={
@@ -125,20 +139,7 @@ function App() {
             }
           />
 
-          {context.isAuth && (
-            <Route
-              path="/profile"
-              element={
-                <>
-                  <h1>Profile</h1>
-                  <h2>Username: {loadUser().username}</h2>
-                  <h2>Email: {loadUser().email}</h2>
-                  <h2>Phone Number: {loadUser().fullName}</h2>
-                  <h2>Avatar Name: {loadUser().avatarName}</h2>
-                </>
-              }
-            />
-          )}
+          {context.isAuth && <Route path="/profile" element={<Profile />} />}
           <Route path="/movies" element={<Movies genres={genres} />} />
           <Route path="/movies/:id" element={<MovieDetails />} />
           <Route path="*" element={<NoPage />} />

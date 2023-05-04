@@ -8,7 +8,6 @@ import { blue, purple, deepOrange } from "@mui/material/colors";
 
 import { getYear } from "../../utils/date";
 import "./MovieCard.css";
-import details from "../../api/details";
 
 const MovieCard = ({ movie }) => {
   return (
@@ -36,9 +35,9 @@ const MovieCard = ({ movie }) => {
           <li>{getYear(movie.release_date)}</li>
           <li>{movie.vote_average}</li>
           <li>
-            {details(
-              movie?.id
-            )?.spoken_languages[0]?.english_name?.toUpperCase()}
+            {movie.genres.map((genre) => (
+              <span key={genre.id}>{genre.name}</span>
+            ))}
           </li>
         </ul>
       </div>

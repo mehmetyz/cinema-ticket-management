@@ -1,0 +1,26 @@
+﻿POST http://localhost:8081/api/account/register
+Content-Type: application/json
+
+{
+      "username": "user20",
+      "email": "test@test.com",
+  "password": "password20"
+}
+
+###
+
+
+POST http://localhost:8081/api/account/login
+Content-Type: application/json
+
+{
+  "username": "user20",
+  "password": "password20"
+}
+                         
+###
+GET http://localhost:8081/api/account/test
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMjAiLCJhdWQiOiJVU0VSIiwiaWF0IjoxNjgyOTQzMzQ4LCJleHAiOjE2ODM1NDgxNDh9.vcj3DPHJrJEPCrZhbo1rSPaJ00wwSJgXdu-IBtbzvGk
+
+

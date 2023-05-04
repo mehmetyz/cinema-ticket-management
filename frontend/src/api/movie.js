@@ -1,9 +1,24 @@
-import movies from 'd:/movie-database/movie_list.json'
+import axios from 'axios';
+import {
+  API_URL
+} from '../config/config.json';
 
-
-const getMovie = () => {
-  return movies;
+export async function getMovies() {
+  const response = await axios.get(`${API_URL}/movie/`);
+  return response.data;
 }
 
+export async function getMovie(id) {
+  const response = await axios.get(`${API_URL}/movie/${id}`);
+  return response.data;
+}
 
-export default getMovie;
+export async function getGenres() {
+  const response = await axios.get(`${API_URL}/movie/genres`);
+  return response.data;
+}
+
+export async function getRandomMovie() {
+  const response = await axios.get(`${API_URL}/movie/random`);
+  return response.data;
+}

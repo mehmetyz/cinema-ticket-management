@@ -6,6 +6,7 @@ import com.sqlcinema.backend.model.UserAccount;
 import com.sqlcinema.backend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class UserController {
     private final UserService userService;
     
     @GetMapping("/{userId}")
+    @PreAuthorize("hasAnyAuthority('USER', 'USER_MANAGER', 'ADMIN')")
     public ResponseEntity<User> getUser(@PathVariable int userId) {
         
         if (userId < 0) {
@@ -45,12 +47,14 @@ public class UserController {
     }
     
     @PutMapping("/{userId}/update")
+    @PreAuthorize("hasAnyAuthority('USER', 'USER_MANAGER', 'ADMIN')")
     public ResponseEntity<User> updateUser(@PathVariable int userId, @RequestBody User user) {
         userService.updateUser(userId, user);
         return ResponseEntity.ok(user);
     }
     
     @DeleteMapping("/{userId}/delete")
+    @PreAuthorize("hasAnyAuthority('USER', 'USER_MANAGER', 'ADMIN')")
     public ResponseEntity<User> deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok().build();

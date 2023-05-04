@@ -5,7 +5,7 @@ import { Button, Grid, Typography } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
-import getMovie from "../../api/movie";
+import { getMovies } from "../../api/movie";
 import Section from "../../components/Section";
 
 import "./MovieDetails.css";
@@ -14,7 +14,17 @@ import { useApplication } from "../../context";
 
 const MovieDetails = () => {
   const path = useParams();
-  const movie = getMovie().find((movie) => movie.id === parseInt(path.id));
+  const[movie, setMovie] = React.useState(null);
+
+  useEffect(() => {
+    const setMovie = async () => {
+      const movies = await getMovies();
+      setMovie(movies.find((movie) => movie.id === parseInt(path.id)));
+    };
+
+    setMovie();
+  }, [path.id]);
+
   return (
     <Section
       height="100vh"

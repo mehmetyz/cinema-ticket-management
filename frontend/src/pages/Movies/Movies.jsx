@@ -2,7 +2,7 @@ import React from "react";
 
 import Section from "../../components/Section";
 
-import getMovie from "../../api/movie";
+import { getMovies } from "../../api/movie";
 import { useQueryParams } from "../../hook";
 import { getMovieCount } from "../../utils/resize";
 import { textSearch } from "../../utils/string";
@@ -15,15 +15,18 @@ const Movies = () => {
   const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
-    const genre_id = genre ? parseInt(genre) : 0;
-    const currentMovies = getMovie().filter((movie) => {
-      const isGenre = genre_id === 0 || movie.genre_ids.includes(genre_id);
-      const isSearch = search ? textSearch(movie.title, search) : true;
-      const isId = id ? movie.id === parseInt(id) : true;
-
-      return isGenre && isSearch && isId;
-    });
-    setMovies(currentMovies);
+    const setMovies = async () => {
+      const genre_id = genre ? parseInt(genre) : 0;
+      const currentMovies = getMovies().filter((movie) => {
+        const isGenre = genre_id === 0 || movie.genre_ids.includes(genre_id);
+        const isSearch = search ? textSearch(movie.title, search) : true;
+        const isId = id ? movie.id === parseInt(id) : true;
+  
+        return isGenre && isSearch && isId;
+      });
+      setMovies(currentMovies);
+    };
+    setMovies();
   }, [id, genre, search]);
 
   return (

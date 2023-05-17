@@ -30,7 +30,6 @@ public class AccountController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-
         UserAccount userAccount = userAccountService.getUserAccountByUsername(loginRequest.getUsername());
         
         if (passwordEncoder.matches(loginRequest.getPassword(), userAccount.getPassword())) {

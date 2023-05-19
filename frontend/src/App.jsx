@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { produce } from "immer";
 
@@ -23,12 +23,12 @@ import { addItem, loadAuthToken, loadUser } from "./utils/localStorage";
 import { navigate } from "./utils/navigate";
 
 import "./App.css";
-import SqlLogger from "./pages/SqlLogger";
+import Checkout from "./pages/Checkout";
 
 function App() {
   const [genres, setGenres] = React.useState([]);
   const [context, setContext] = React.useState({
-    isAuth: loadAuthToken() && loadUser() ? true : false,
+    isAuth: loadAuthToken() && loadUser()  ? true : false,
     isNavTransparent: true,
     snackBarMessage: "",
     snackBarOpen: false,
@@ -55,13 +55,13 @@ function App() {
     login: async (username, password) => {
       const response = await login(username, password);
       if (response.status === 200 && response.data) {
-        const { token, userId } = response.data;
+        const { token } = response.data;
         addItem("auth_token", token);
 
-        const user = await getUser(userId);
-        addItem("user", JSON.stringify(user.data));
+        const userData = await getUser();
+        addItem("user", userData.data);
+
         context.showSnackBar("Login successful", "success");
-        navigate("/", 1000);
         setTimeout(() => {
           setContext(
             produce((draft) => {
@@ -69,6 +69,7 @@ function App() {
             })
           );
         }, 1000);
+        navigate("/", 1000);
       }
     },
     logout: async () => {
@@ -98,15 +99,21 @@ function App() {
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchGenres = async () => {
       const genres = await getGenres();
-      setGenres(genres);
+      genres.push({ genreId: 0, name: "All" });
+      setGenres(
+        genres.sort((a, b) => {
+          if (a.genreId == 0) return -1;
+          return a.name.localeCompare(b.name);
+        })
+      );
     };
     fetchGenres();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     window.addEventListener("scroll", () =>
       handleScroll(window.scrollY > 0, context)
     );
@@ -121,7 +128,6 @@ function App() {
         <Header movieGenres={genres}></Header>
         <Routes>
           <Route path="/" element={<Home genres={genres} />} exact />
-          <Route path="/sql" element={<SqlLogger />} />
           <Route
             path="/login"
             element={
@@ -139,9 +145,21 @@ function App() {
             }
           />
 
+          
+
           {context.isAuth && <Route path="/profile" element={<Profile />} />}
           <Route path="/movies" element={<Movies genres={genres} />} />
           <Route path="/movies/:id" element={<MovieDetails />} />
+          <Route
+            path="/movies/:id/checkout"
+            element={
+              context.isAuth ? (
+                <Checkout />
+              ) : (
+                <Authentication login />
+              )
+            }
+          />
           <Route path="*" element={<NoPage />} />
         </Routes>
         <Snackbar

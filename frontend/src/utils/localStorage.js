@@ -16,7 +16,7 @@ export function loadAuthToken() {
 }
 
 export function loadUser() {
-    return JSON.parse(loadApplicationData().user);
+    return loadApplicationData().user;
 }
 
 export function addItem(item, value) {

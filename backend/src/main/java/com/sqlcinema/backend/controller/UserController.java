@@ -3,6 +3,8 @@ package com.sqlcinema.backend.controller;
 import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.User;
 import com.sqlcinema.backend.model.UserAccount;
+import com.sqlcinema.backend.model.response.UserResponse;
+import com.sqlcinema.backend.service.UserAccountService;
 import com.sqlcinema.backend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,19 @@ public class UserController {
     
     private final Logger logger; 
     private final UserService userService;
+    private final UserAccountService userAccountService;
     
-    @GetMapping("/{userId}")
+    @GetMapping({"/{userId}", "/me"})
     @PreAuthorize("hasAnyAuthority('USER', 'USER_MANAGER', 'ADMIN')")
-    public ResponseEntity<User> getUser(@PathVariable int userId) {
-        
-        if (userId < 0) {
+    public ResponseEntity<UserResponse> getUser(@PathVariable(value = "userId", required = false) Integer userId) {
+        if (userId != null && userId < 0) {
             return ResponseEntity.badRequest().build();
         }
-        
         UserAccount userAccount = (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        if (userId == null) {
+            userId = userAccount.getUserId();
+        }
                                                 
         if ((userAccount.getRole() == Role.USER 
                 && userAccount.getUserId() != userId)
@@ -43,7 +48,16 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
         
-        return ResponseEntity.ok(user);
+        UserResponse userResponse = UserResponse.fromUser(user);
+        
+        if (userId != userAccount.getUserId()) {
+            userAccount = userAccountService.getUserAccountById(userId);
+        }
+        
+        userResponse.setUsername(userAccount.getUsername());
+        userResponse.setRole(userAccount.getRole());
+        
+        return ResponseEntity.ok(userResponse);
     }
     
     @PutMapping("/{userId}/update")

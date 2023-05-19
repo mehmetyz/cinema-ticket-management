@@ -19,7 +19,9 @@ public class UserRepository {
         UserAccount userAccount;
         
         try {
-            userAccount = jdbcTemplate.queryForObject("SELECT * FROM UserAccount WHERE username = ?",
+            userAccount = jdbcTemplate.queryForObject("SELECT ua.*, m.role FROM UserAccount ua " +
+                            "INNER JOIN Manager m ON m.user_id = ua.user_id " +
+                            "WHERE username = ?",
                     BeanPropertyRowMapper.newInstance(UserAccount.class), username);
         } catch (EmptyResultDataAccessException e) {
             return null;

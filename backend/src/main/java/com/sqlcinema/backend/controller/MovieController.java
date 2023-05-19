@@ -2,10 +2,13 @@ package com.sqlcinema.backend.controller;
 
 import com.sqlcinema.backend.model.Genre;
 import com.sqlcinema.backend.model.Movie;
+import com.sqlcinema.backend.model.UserAccount;
+import com.sqlcinema.backend.model.request.MovieRequest;
 import com.sqlcinema.backend.service.MovieService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,10 +75,26 @@ public class MovieController {
     }
     
     
-    @PostMapping
+    @PostMapping("/")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Movie> addMovie(@RequestBody Movie movie) {
-        movieService.addMovie(movie);
-        return ResponseEntity.ok(movie);
+    public ResponseEntity<Movie> addMovie(@RequestBody MovieRequest movie) {
+        int movieId = movieService.addMovie(movie);
+        System.out.println(movieId);
+        return ResponseEntity.ok(movieService.getMovie(movieId));
     }
+    
+    @DeleteMapping("/{movieId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteMovie(@PathVariable("movieId") int movieId) {
+        movieService.deleteMovie(movieId);
+        return ResponseEntity.ok().build();
+    }
+    
+    @PutMapping("/{movieId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Movie> updateMovie(@PathVariable("movieId") int movieId, @RequestBody MovieRequest movie) {
+        movieService.updateMovie(movieId, movie);
+        return ResponseEntity.ok(movieService.getMovie(movieId));
+    }
+    
 }

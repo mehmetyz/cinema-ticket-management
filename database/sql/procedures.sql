@@ -447,70 +447,70 @@ CREATE PROCEDURE delete_user (
     IN user_id INT
 )
 BEGIN
-    DELETE FROM User WHERE user_id = user_id;
+    DELETE FROM User u WHERE u.user_id = user_id;
 END $$
 
 CREATE PROCEDURE unassign_manager (
     IN user_id INT
 )
 BEGIN
-    DELETE FROM Manager WHERE user_id = user_id;
+    DELETE FROM Manager m WHERE m.user_id = user_id;
 END $$
 
 CREATE PROCEDURE delete_person (
     IN person_id INT
 )
 BEGIN
-    DELETE FROM Person WHERE person_id = person_id;
+    DELETE FROM Person p WHERE p.person_id = person_id;
 END $$
 
 CREATE PROCEDURE delete_movie (
     IN movie_id INT
 )
 BEGIN
-    DELETE FROM Movie WHERE movie_id = movie_id;
+    DELETE FROM Movie m WHERE m.movie_id = movie_id;
 END $$
 
 CREATE PROCEDURE delete_theatre (
     IN theatre_id INT
 )
 BEGIN
-    DELETE FROM Theatre WHERE theatre_id = theatre_id;
+    DELETE FROM Theatre t WHERE t.theatre_id = theatre_id;
 END $$
 
 CREATE PROCEDURE delete_ticket (
     IN ticket_id INT
 )
 BEGIN
-    DELETE FROM Ticket WHERE ticket_id = ticket_id;
+    DELETE FROM Ticket t WHERE t.ticket_id = ticket_id;
 END $$
 
 CREATE PROCEDURE delete_user_movie_comment (
     IN comment_id INT
 )
 BEGIN
-    DELETE FROM UserMovieComment WHERE comment_id = comment_id;
+    DELETE FROM UserMovieComment umc WHERE umc.comment_id = comment_id;
 END $$
 
 CREATE PROCEDURE delete_coupon (
     IN code VARCHAR(20)
 )
 BEGIN
-    DELETE FROM Coupon WHERE code = code;
+    DELETE FROM Coupon c WHERE c.code = code;
 END $$
 
 CREATE PROCEDURE delete_reservation (
     IN reservation_id INT
 )
 BEGIN
-    DELETE FROM Reservation WHERE reservation_id = reservation_id;
+    DELETE FROM Reservation r WHERE r.reservation_id = reservation_id;
 END $$
 
 CREATE  PROCEDURE delete_genre (
     IN genre_id INT
 )
 BEGIN
-    DELETE FROM Genre WHERE genre_id = genre_id;
+    DELETE FROM Genre g WHERE g.genre_id = genre_id;
 END $$
 
 CREATE PROCEDURE delete_movie_genre (
@@ -518,21 +518,21 @@ CREATE PROCEDURE delete_movie_genre (
     IN genre_id INT
 )
 BEGIN
-    DELETE FROM MovieGenre WHERE movie_id = movie_id AND genre_id = genre_id;
+    DELETE FROM MovieGenre mg WHERE mg.movie_id = movie_id AND mg.genre_id = genre_id;
 END $$
 
 CREATE PROCEDURE delete_user_report (
     IN report_id INT
 )
 BEGIN
-    DELETE FROM UserReport WHERE report_id = report_id;
+    DELETE FROM UserReport ur WHERE ur.report_id = report_id;
 END $$
 
 CREATE PROCEDURE delete_keyword_set (
     IN movie_id INT
 )
 BEGIN
-    DELETE FROM KeywordSet WHERE movie_id = movie_id;
+    DELETE FROM KeywordSet ks WHERE ks.movie_id = movie_id;
 END $$
 
 DELIMITER ;

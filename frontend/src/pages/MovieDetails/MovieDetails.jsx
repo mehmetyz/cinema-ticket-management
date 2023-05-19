@@ -4,6 +4,9 @@ import { useParams } from "react-router-dom";
 import { Button, Grid, Typography } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ScheduleIcon from "@mui/icons-material/Schedule";
+
 
 import { getMovie } from "../../api/movie";
 import Section from "../../components/Section";
@@ -11,6 +14,7 @@ import Section from "../../components/Section";
 import "./MovieDetails.css";
 import { deepOrange, purple } from "@mui/material/colors";
 import { useApplication } from "../../context";
+import { convertDate, getHourAndMinute } from "../../utils/date";
 
 const MovieDetails = () => {
   const path = useParams();
@@ -82,6 +86,45 @@ const MovieDetails = () => {
           >
             {movie?.overview}
           </Typography>
+
+          <Grid
+            container
+            sx={{
+              width: "100%",
+              height: "50px",
+              fontSize: "14px",
+              fontWeight: "700",
+            }}
+            pt={3}
+          >
+            <Grid item sx={{ width: "max-content" }} mr={2}>
+              <span className="movie-details pegi">
+                {movie?.language?.toUpperCase()}
+              </span>
+            </Grid>
+            <Grid item sx={{ width: "max-content" }} mr={2}>
+              <span className="movie-details quality">
+                {movie?.rating * 10}%
+              </span>
+            </Grid>
+            <Grid item sx={{ width: "max-content" }} mr={2}>
+              <span className="movie-details">
+                {movie?.genres.map((genre) => genre.name).join(", ")}
+              </span>
+            </Grid>
+            <Grid item sx={{ width: "max-content" }} mr={1}>
+              <span className="movie-details">
+                <CalendarMonthIcon sx={{ fontSize: "18px" }} />
+                {convertDate(movie?.releaseDate).getFullYear()}
+              </span>
+            </Grid>
+            <Grid item sx={{ width: "max-content" }} mr={1}>
+              <span className="movie-details">
+                <ScheduleIcon sx={{ fontSize: "18px" }} />
+                {getHourAndMinute(movie?.runtime)}
+              </span>
+            </Grid>
+          </Grid>
 
           <Grid display="flex" gap={2} pt={3}>
             <Button

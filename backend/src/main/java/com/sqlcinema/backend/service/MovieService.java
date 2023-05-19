@@ -2,6 +2,7 @@ package com.sqlcinema.backend.service;
 
 import com.sqlcinema.backend.model.Genre;
 import com.sqlcinema.backend.model.Movie;
+import com.sqlcinema.backend.model.request.MovieRequest;
 
 import java.util.List;
 
@@ -16,10 +17,14 @@ public interface MovieService {
     
     Movie randomMovie();
     
-    void addMovie(Movie movie);
+    int addMovie(MovieRequest movie);
 
     int getMovieCount(int genreId);
 
     int getMovieCount(String query);
+
+    void deleteMovie(int movieId);
+
+    void updateMovie(int movieId, MovieRequest movie);
 }
                                                         

@@ -16,8 +16,7 @@ public class Constants {
     public void setJwtSecret(String jwtSecret) {
         JWT_SECRET = jwtSecret;
     }
-
-
+    
     public static String[] createStringArray(String... strings) {
         return strings;
     }
@@ -26,7 +25,7 @@ public class Constants {
         return objects;
     }
 
-    public static String[] getAnynomousEndpoints() {
+    public static String[] getAnonymousEndpoints() {
         return createStringArray(
                 "/api/account/register",
                 "/api/account/login",

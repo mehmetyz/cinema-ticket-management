@@ -15,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static com.sqlcinema.backend.common.Constants.LOGOUT_URL;
-import static com.sqlcinema.backend.common.Constants.getAnynomousEndpoints;
+import static com.sqlcinema.backend.common.Constants.getAnonymousEndpoints;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers(getAnynomousEndpoints()).permitAll()
+                .requestMatchers(getAnonymousEndpoints()).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

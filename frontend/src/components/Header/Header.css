@@ -42,6 +42,8 @@
 }
 
 .logo {
+    position: relative;
+    left: 0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -61,7 +63,7 @@
 
 .menu>ul>li>.nav-link {
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 700;   
     font-style: normal;
 
     text-decoration: none;
@@ -79,6 +81,12 @@
 
 .menu>ul>li>.nav-link:hover {
     color: #119eba;
+}
+
+.menu>ul>li:last-child {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
 }
 
 
@@ -120,38 +128,6 @@
 
 .search-box>form>input:focus::placeholder {
     color: #171d22;
-}
-
-.login-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    width: max-content;
-
-    margin-right: 1.5rem;
-
-    height: 100%;
-}
-
-.login-btn>a {
-    font-size: 16px;
-    font-weight: 700;
-    font-style: normal;
-    text-decoration: none;
-    text-transform: uppercase;
-    transition: all 0.3s ease-in-out;
-
-    border-radius: 2px;
-    background-color: #045a6a;
-    color: #f0f0f0;
-    padding: 0.5rem 1.1rem;
-
-}
-
-.login-btn>a:hover {
-    background-color: #05788d;
-
 }
 
 

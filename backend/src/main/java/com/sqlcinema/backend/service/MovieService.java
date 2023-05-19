@@ -7,9 +7,19 @@ import java.util.List;
 
 public interface MovieService {
     List<Genre> getGenres();
-    List<Movie> getMovies(int page, int pageSize);
-    List<Movie> getPopularMovies(int page, int pageSize);
-    List<Movie> getNewestMovies(int page, int pageSize);
+    Movie getMovie(int id);
+    List<Movie> getMovies(int page, int pageSize, int genreId);
+    List<Movie> getPopularMovies(int page, int pageSize, int genreId);
+    List<Movie> getNewestMovies(int page, int pageSize, int genreId);
+
+    List<Movie> searchMovies(int page, int size, String query);
     
     Movie randomMovie();
+    
+    void addMovie(Movie movie);
+
+    int getMovieCount(int genreId);
+
+    int getMovieCount(String query);
 }
+                                                        

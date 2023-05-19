@@ -6,20 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-
 public class CustomLogger extends Logger {
     private final LogFileProcessor logFileProcessor;
     public CustomLogger(String name, String resourceBundleName, LogFileProcessor logFileProcessor) {
         super(name, resourceBundleName);
         this.logFileProcessor = logFileProcessor;
     }
-    public void sqlLog(String sql, String method, String[] tableName, Object[] params) {
+    public void sqlLog(String sql, Object[] params) {
+        
+        this.info("SQL: " + sql);
         
         Log log = Log.builder()
                 .sql(sql)
-                .method(method)
-                .tableName(tableName)
                 .params(params)
+                .timestamp(System.currentTimeMillis())
                 .build();
         
         try {
@@ -39,5 +39,9 @@ public class CustomLogger extends Logger {
     
     public void clearLogs() {
         logFileProcessor.clearLogs();
+    }
+
+    public void sqlLog(String query) {
+        this.sqlLog(query, new Object[]{});
     }
 }

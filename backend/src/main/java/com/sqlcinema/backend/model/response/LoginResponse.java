@@ -1,12 +1,10 @@
 package com.sqlcinema.backend.model.response;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @Builder
-@Getter
-@Setter
 public class LoginResponse {
     private String token;
     private int userId;

@@ -1,26 +1,30 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import Section from "../../components/Section";
-import { Grid, Typography } from "@mui/material";
-import { loadUser } from "../../utils/localStorage";
+import { Card, Grid, Paper, Typography } from "@mui/material";
+import { getUser } from "../../api/user";
 
 const Profile = () => {
-  const [user, setUser] = React.useState(loadUser());
+  const [user, setUser] = React.useState();
+
+  useLayoutEffect(() => {
+    const fetchUser = async () => {
+      const response = await getUser();
+      console.log(
+        "🚀 ~ file: Profile.jsx:12 ~ fetchUser ~ response:",
+        response
+      );
+
+      setUser(response.data);
+    };
+    fetchUser();
+  }, []);
+
   return (
     <>
       <Section bgImage="bg.jpg" height="100vh" opacity="0.5">
-        <Grid
-          container
-          justifyContent="flex-start"
-          alignItems="center"
-          flexDirection={"column"}
-          height={"70%"}
-        >
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="h4" color="white" textAlign="center" fontWeight={600}>
-              Profile
-            </Typography>
-          </Grid>
-        </Grid>
+        <Paper elevation={3} width="100%" height="100%">
+          <p>dxas</p>
+        </Paper>
       </Section>
     </>
   );

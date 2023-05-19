@@ -16,11 +16,17 @@ const Home = ({ genres }) => {
 
   useEffect(() => {
     const fetchRandomMovie = async () => {
-      const randomMovie  = await getMovies();
+      const randomMovie = await getMovies();
       setRandomMovie(randomMovie);
     };
     fetchRandomMovie();
 
+    return () => {
+      setRandomMovie(null);
+    };
+  }, []);
+
+  useEffect(() => {
     window.addEventListener("scroll", () => {
       if (window.scrollY > 100) {
         scrollBtn.current.style.display = "block";
@@ -37,7 +43,7 @@ const Home = ({ genres }) => {
   return (
     <>
       <RandomMovie movie={randomMovie} genres={genres} />
-      {/* <PopularMovies genres={genres} /> */}
+      <PopularMovies genres={genres} />
       <Footer />
 
       <button

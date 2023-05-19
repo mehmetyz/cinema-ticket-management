@@ -18,7 +18,7 @@ const Header = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    window.location.href = `/movies${search ? `?search=${search}` : ""}`;
+    window.location.href = `/movies${search ? `?query=${search}` : ""}`;
   };
   return (
     <header>

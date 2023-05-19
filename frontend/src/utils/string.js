@@ -11,4 +11,5 @@ const textSearch = (str, search, isCaseSensitive = false) => {
   return str.includes(search);
 };
 
+
 export { textSearch };

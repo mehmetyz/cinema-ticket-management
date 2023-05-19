@@ -2,39 +2,58 @@ import React from "react";
 
 import Section from "../../components/Section";
 
-import { getMovies } from "../../api/movie";
+import {
+  getMovieCount,
+  getMovieCountByQuery,
+  getMovies,
+  search,
+} from "../../api/movie";
 import { useQueryParams } from "../../hook";
-import { getMovieCount } from "../../utils/resize";
-import { textSearch } from "../../utils/string";
+
 import MovieList from "../../components/MovieList";
 import { Typography } from "@mui/material";
 
+const MOVIE_PER_PAGE = 50;
+
 const Movies = () => {
-  const { id, genre, search } = useQueryParams();
+  const { genre, query } = useQueryParams();
+
   const [movies, setMovies] = React.useState([]);
+  const [count, setCount] = React.useState(0);
   const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
-    const setMovies = async () => {
-      const genre_id = genre ? parseInt(genre) : 0;
-      const currentMovies = getMovies().filter((movie) => {
-        const isGenre = genre_id === 0 || movie.genre_ids.includes(genre_id);
-        const isSearch = search ? textSearch(movie.title, search) : true;
-        const isId = id ? movie.id === parseInt(id) : true;
-  
-        return isGenre && isSearch && isId;
-      });
-      setMovies(currentMovies);
+    const fetchMovies = async () => {
+      let movies, count;
+
+      if (query) {
+        movies = await search({ query, page, size: MOVIE_PER_PAGE });
+        count = await getMovieCountByQuery(query);
+      } else {
+        movies = await getMovies({
+          genreId: genre || 0,
+          page,
+          size: MOVIE_PER_PAGE,
+        });
+        count = await getMovieCount(genre || 0);
+      }
+
+      setCount(count);
+      setMovies(movies);
     };
-    setMovies();
-  }, [id, genre, search]);
+    fetchMovies();
+
+    return () => {
+      setMovies([]);
+    };
+  }, [genre, page, query]);
 
   return (
     <Section height="100vh" bgImage="/bg.jpg" opacity={0.6}>
-      {movies && movies.length ? (
+      {movies && movies.length > 0 && count > 0 ? (
         <MovieList
           movies={movies}
-          pagination={{ page, count: getMovieCount(), setPage }}
+          pagination={{ page, count, setPage }}
           props={{
             p: 2,
             pt: 10,

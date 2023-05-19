@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Link, Pagination, PaginationItem } from "@mui/material";
+import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 
 import MovieCard from "../MovieCard";
 
@@ -11,95 +12,99 @@ import { blue } from "@mui/material/colors";
 
 const MovieList = ({ movies, genre, pagination, props }) => {
   const context = useApplication();
-
   return (
-    <Grid
-      container
-      maxWidth="m"
-      {...props}
-      sx={{
-        alignItems: "start",
-        justifyContent: "center",
-        width: "100%",
-        heigth: "auto",
-        maxHeight: "80%",
-        display: "flex",
-        flexWrap: "wrap",
+    <>
+      <Grid
+        container
+        maxWidth="m"
+        {...props}
+        sx={{
+          alignItems: "start",
+          justifyContent: "flex-start",
+          width: "100%",
+          heigth: "auto",
+          maxHeight: "80%",
+          display: "flex",
+          flexWrap: "wrap",
 
-        rowGap: "30px",
-        columnGap: "15px",
-        overflow: "scroll",
+          rowGap: "30px",
+          columnGap: "15px",
+          overflow: "scroll",
 
-        ["&::-webkit-scrollbar"]: {
-          width: "0.4em",
-        },
-        ["&::-webkit-scrollbar-track"]: {
-          boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-          webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
-        },
-        ["&::-webkit-scrollbar-thumb"]: {
-          backgroundColor: "rgba(0,0,0,.1)",
-          outline: "1px solid slategrey",
-        },
-      }}
-      onScroll={(e) => handleScroll(e.target.scrollTop > 0, context)}
-    >
-      {movies &&
-        movies
-          .slice(...calcPage(pagination.page ?? 1))
-          .map((movie) => <MovieCard movie={movie} key={movie.id} />)}
+          ["&::-webkit-scrollbar"]: {
+            width: "0.4em",
+          },
+          ["&::-webkit-scrollbar-track"]: {
+            boxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+            webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
+          },
+          ["&::-webkit-scrollbar-thumb"]: {
+            backgroundColor: "rgba(0,0,0,.1)",
+            outline: "1px solid slategrey",
+          },
+        }}
+        onScroll={(e) => handleScroll(e.target.scrollTop > 0, context)}
+      >
+        {movies &&
+          movies
+            .map((movie) => <MovieCard movie={movie} key={movie.movieId} />)}
+      </Grid>
+      <Grid container justifyContent="space-evenly" alignItems="center">
+        {pagination && pagination.page && pagination.count ? (
+          <Pagination
+            color="primary"
+            count={Math.ceil(pagination.count / 50)}
+            page={pagination.page}
+            onChange={(_, page) => pagination.setPage(page)}
+            renderItem={(item) => (
+              <PaginationItem
+                {...item}
+                sx={{
+                  backgroundColor: "#fff",
+                  border: "none",
+                  ["&:hover"]: {
+                    backgroundColor: "#fafafa",
+                  },
+                }}
+              />
+            )}
+            sx={{
+              position: "absolute",
+              width: "90%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 2,
+            }}
+          />
+        ) : (
+          <Link
+            href={`/movies?genre=${genre ? genre : "0"}`}
+            underline="none"
+            sx={{
+              fontSize: "15px",
+              fontWeight: "500",
+              backgroundColor: "#fff",
+              padding: "8px",
+              borderRadius: "5px",
+              transition: "all 0.3s ease-in-out",
+              marginTop: "20px",
 
-      {pagination && pagination.page && pagination.count ? (
-        <Pagination
-          color="primary"
-          count={Math.ceil(movies.length / pagination.count)}
-          page={pagination.page}
-          onChange={(_, page) => pagination.setPage(page)}
-          renderItem={(item) => (
-            <PaginationItem
-              {...item}
-              sx={{
-                backgroundColor: "#fff",
-                border: "none",
-                ["&:hover"]: {
-                  backgroundColor: "#fafafa",
-                },
-              }}
-            />
-          )}
-          sx={{
-            bottom: 0,
-            position: "absolute",
-            width: "90%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            mt: 2,
-          }}
-        />
-      ) : (
-        <Link
-          href={`/movies?genre=${genre ? genre : "0"}`}
-          underline="none"
-          sx={{
-            color: "#fff",
-            fontSize: "15px",
-            backgroundColor: blue[700],
-            padding: "8px",
-            borderRadius: "5px",
-            transition: "all 0.3s ease-in-out",
-            ["&:hover"]: {
-              backgroundColor: blue[500],
-            },
+              ["&:hover"]: {
+                backgroundColor: blue[500],
+                color: "#fff",
+              },
 
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <b>{">>>"}</b> &nbsp; Load More
-        </Link>
-      )}
-    </Grid>
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <FormatListBulletedIcon sx={{ mr: 1 }} />
+            See more
+          </Link>
+        )}
+      </Grid>
+    </>
   );
 };
 

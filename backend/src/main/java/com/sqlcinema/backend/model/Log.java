@@ -16,12 +16,9 @@ public class Log {
     @JsonProperty("sql")
     private String sql;
     
-    @JsonProperty("method")
-    private String method;
-    
-    @JsonProperty("tableName")
-    private String[] tableName;
-    
     @JsonProperty("params")
     private Object[] params;
+    
+    @JsonProperty("timestamp")
+    private long timestamp;
 }

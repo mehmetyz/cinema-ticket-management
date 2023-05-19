@@ -6,7 +6,7 @@ import RemoveRedEye from "@mui/icons-material/RemoveRedEye";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { blue, purple, deepOrange } from "@mui/material/colors";
 
-import { getYear } from "../../utils/date";
+import { convertDate, getYear } from "../../utils/date";
 import "./MovieCard.css";
 
 const MovieCard = ({ movie }) => {
@@ -26,18 +26,16 @@ const MovieCard = ({ movie }) => {
     >
       <img
         className="movie-card-image"
-        src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+        src={movie.posterPath ? `https://image.tmdb.org/t/p/w500${movie.posterPath}` : "no-image.jpg"}
         alt={movie.title}
       />
       <div className="movie-card-content">
         <h3>{movie.title}</h3>
         <ul className="movie-card-content-list">
-          <li>{getYear(movie.release_date)}</li>
-          <li>{movie.vote_average}</li>
+          <li>{convertDate(movie.releaseDate).getFullYear()}</li>
+          <li>{movie.rating.toFixed(1)}</li>
           <li>
-            {movie.genres.map((genre) => (
-              <span key={genre.id}>{genre.name}</span>
-            ))}
+            {movie.language.toUpperCase()}
           </li>
         </ul>
       </div>
@@ -66,7 +64,7 @@ const MovieCard = ({ movie }) => {
             </IconButton>
 
             <Link
-              href={`/movies/${movie.id}`}
+              href={`/movies/${movie.movieId}`}
               underline="none"
               sx={{
                 color: "#fff",
@@ -92,7 +90,7 @@ const MovieCard = ({ movie }) => {
               View
             </Link>
             <Link
-              href={`/movies/${movie.id}/buy`}
+              href={`/movies/${movie.movieId}/checkout`}
               underline="none"
               sx={{
                 fontSize: "15px",

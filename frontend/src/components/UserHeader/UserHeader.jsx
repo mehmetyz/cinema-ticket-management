@@ -8,9 +8,8 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import ShopIcon from "@mui/icons-material/Shop";
-import StarIcon from "@mui/icons-material/Star";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { navigate } from "../../utils/navigate";
 
@@ -59,9 +58,9 @@ const UserHeader = ({ logout }) => {
     <>
       <Grid container spacing={5}>
         <Grid item xs={12} md={3}>
-          <Tooltip title="Your Cart" placement="bottom" arrow>
+          <Tooltip title="Your Favorite Movies" placement="bottom" arrow>
             <IconButton sx={styles.iconButton}>
-              <ShoppingCartIcon
+              <LocalActivityIcon
                 sx={{
                   fontSize: "xx-large",
                 }}
@@ -70,7 +69,7 @@ const UserHeader = ({ logout }) => {
           </Tooltip>
         </Grid>
         <Grid item xs={12} md={3}>
-          <Tooltip title="Your Purchased Tickets" placement="bottom" arrow>
+          <Tooltip title="Your Reservations" placement="bottom" arrow>
             <IconButton sx={styles.iconButton}>
               <ShopIcon
                 sx={{
@@ -119,10 +118,7 @@ const UserHeader = ({ logout }) => {
             <MenuItem sx={styles.menuItem} onClick={handleUserProfile}>
               My account
             </MenuItem>
-            <MenuItem sx={styles.menuItem} onClick={handleClose}>
-              Favorites
-              <StarIcon sx={{ ml: 1 }} />
-            </MenuItem>
+
             <MenuItem sx={styles.menuItem} onClick={handleLogout}>
               Logout
               <LogoutIcon sx={{ ml: 1 }} />

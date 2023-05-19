@@ -4,6 +4,7 @@ import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.User;
 import com.sqlcinema.backend.model.UserAccount;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,11 +16,15 @@ public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public UserAccount findUserAccountByUsername(String username) {
-        UserAccount userAccount = jdbcTemplate
-                .queryForObject("SELECT ua.*, m.role FROM UserAccount ua " +
-                                "LEFT JOIN Manager m ON ua.user_id = m.user_id " +
-                                "WHERE ua.username = ?",
-                        BeanPropertyRowMapper.newInstance(UserAccount.class), username);
+        UserAccount userAccount;
+        
+        try {
+            userAccount = jdbcTemplate.queryForObject("SELECT * FROM UserAccount WHERE username = ?",
+                    BeanPropertyRowMapper.newInstance(UserAccount.class), username);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        
 
         if (userAccount != null && userAccount.getRole() == null) {
             userAccount.setRole(Role.USER);
@@ -78,5 +83,14 @@ public class UserRepository {
                         "WHERE user_id = ?", user.getFullName(), user.getAvatarName(),
                 user.getPhoneNumber(), user.getBirthDate(), userId);
 
+    }
+
+    public User findUserByEmail(String email) {
+        try {
+            return jdbcTemplate.queryForObject("SELECT * FROM User WHERE email = ?",
+                    BeanPropertyRowMapper.newInstance(User.class), email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }                                               

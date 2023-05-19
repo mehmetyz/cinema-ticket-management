@@ -11,6 +11,11 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     
     private final UserRepository userRepository;
+    
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
 
     @Override
     public User getUserById(int userId) {

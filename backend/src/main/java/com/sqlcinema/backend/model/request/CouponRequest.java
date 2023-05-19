@@ -1,12 +1,17 @@
 package com.sqlcinema.backend.model.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.sqlcinema.backend.model.Coupon;
+import com.sqlcinema.backend.model.CouponType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
-public class CouponRequest {
-    private String code;
-    private float price;
-
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+public class CouponRequest extends Coupon {
+    private CouponType type;
+    
+    private float discount;
+    private float limit;
 }

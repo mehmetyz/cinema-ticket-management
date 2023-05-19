@@ -2,6 +2,7 @@ package com.sqlcinema.backend.service.impl;
 
 import com.sqlcinema.backend.model.AmountCoupon;
 import com.sqlcinema.backend.model.Coupon;
+import com.sqlcinema.backend.model.CouponType;
 import com.sqlcinema.backend.model.PercentCoupon;
 import com.sqlcinema.backend.model.order.CouponOrder;
 import com.sqlcinema.backend.model.request.CouponRequest;
@@ -16,21 +17,13 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class CouponServiceImpl implements CouponService {
-    @Autowired
-    private CouponRepository couponRepository;
-    public List<Coupon> getCoupon(CouponOrder orderBy){
-        return couponRepository.getCoupon(orderBy);
+    private final CouponRepository couponRepository;
+    
+    public List<? extends Coupon> getCoupons(CouponType type){
+        return couponRepository.getCoupons(type);
     }
-    public List<PercentCoupon> getPercentCoupon(CouponOrder orderBy){
-        return couponRepository.getPercentCoupon(orderBy);
-    }
-    public List<AmountCoupon> getAmountCoupon(CouponOrder orderBy){
-        return couponRepository.getAmountCoupon(orderBy);
-    }
-    public Coupon getCouponById(String code){
-        return couponRepository.getCouponById(code);
-    }
-    public void useCoupon(String code){
-        couponRepository.useCoupon(code);
+    
+    public Coupon getCouponByCode(String code){
+        return couponRepository.getCouponByCode(code);
     }
 }

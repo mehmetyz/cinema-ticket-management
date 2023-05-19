@@ -1,10 +1,7 @@
 package com.sqlcinema.backend.repository;
 
 import com.sqlcinema.backend.common.CustomLogger;
-import com.sqlcinema.backend.model.AmountCoupon;
-import com.sqlcinema.backend.model.Coupon;
-import com.sqlcinema.backend.model.Genre;
-import com.sqlcinema.backend.model.PercentCoupon;
+import com.sqlcinema.backend.model.*;
 import com.sqlcinema.backend.model.order.CouponOrder;
 import com.sqlcinema.backend.model.request.CouponRequest;
 import com.sqlcinema.backend.model.response.CouponResponse;
@@ -14,7 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.sqlcinema.backend.common.Constants.createObjectArray;
 import static com.sqlcinema.backend.common.Constants.createStringArray;
@@ -25,42 +24,79 @@ public class CouponRepository {
     private final JdbcTemplate jdbcTemplate;
     private final CustomLogger logger;
 
-    public List<PercentCoupon> getPercentCoupon(CouponOrder orderBy) {
-        String percent_query = "SELECT * FROM Coupon NATURAL INNER JOIN PercentCoupon"+
-                (orderBy != null && !orderBy.getValue().isEmpty() ? " ORDER BY " + orderBy.getValue() : "");
-        logger.sqlLog(percent_query, "SELECT", createStringArray("PercentCoupon"), createObjectArray());
-        return jdbcTemplate.query(percent_query, BeanPropertyRowMapper.newInstance(PercentCoupon.class));
+    private List<PercentCoupon> getPercentCoupon() {
+        String query = "SELECT * FROM Coupon NATURAL INNER JOIN PercentCoupon ORDER BY expire_date DESC";
+        logger.sqlLog(query, createObjectArray(""));
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(PercentCoupon.class));
     }
-    public List<AmountCoupon> getAmountCoupon(CouponOrder orderBy) {
-        String amount_query = "SELECT * FROM Coupon NATURAL INNER JOIN AmountCoupon"+
-                (orderBy != null && !orderBy.getValue().isEmpty() ? " ORDER BY " + orderBy.getValue() : "");
-        logger.sqlLog(amount_query, "SELECT", createStringArray("AmountCoupon"), createObjectArray());
-        return jdbcTemplate.query(amount_query, BeanPropertyRowMapper.newInstance(AmountCoupon.class));
+
+    private List<AmountCoupon> getAmountCoupon() {
+        String query = "SELECT * FROM Coupon NATURAL INNER JOIN AmountCoupon ORDER BY expire_date DESC";
+        logger.sqlLog(query, createObjectArray(""));
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AmountCoupon.class));
     }
-    public void useCoupon(String code){
-        String query="UPDATE Coupon SET Coupon.coupon_left=Coupon.coupon_left-1 WHERE Coupon.code=?";
-        jdbcTemplate.update(query,code);
-        logger.sqlLog(query, "UPDATE", createStringArray("COUPON"), createObjectArray());
+
+    public void useCoupon(String code) {
+        String query = "UPDATE Coupon SET coupon_left = Coupon.coupon_left - 1 WHERE Coupon.code = ?";
+        jdbcTemplate.update(query, code);
+        logger.sqlLog(query, createObjectArray(code));
     }
-    public List<Coupon> getCoupon(CouponOrder orderBy) {
-        List<Coupon> coupons=new ArrayList<>();
-        coupons.addAll(getAmountCoupon(orderBy));
-        coupons.addAll(getPercentCoupon(orderBy));
+
+    public List<? extends Coupon> getCoupons(CouponType type) {
+        List<Coupon> coupons = new ArrayList<>();
+
+        if (type.equals(CouponType.ALL)) {
+            coupons.addAll(getPercentCoupon());
+            coupons.addAll(getAmountCoupon());
+            return coupons;
+        } else if (type.equals(CouponType.PERCENT)) {
+            return getPercentCoupon();
+        } else if (type.equals(CouponType.AMOUNT)) {
+            return getAmountCoupon();
+        }
+
         return coupons;
     }
-    public Coupon getCouponById(String code){
-        String percent_query = "SELECT * FROM (SELECT * FROM Coupon WHERE Coupon.code = ? ) as Coupon NATURAL INNER JOIN PercentCoupon ";
-        String amount_query = "SELECT * FROM (SELECT * FROM Coupon WHERE Coupon.code = ? ) as Coupon NATURAL INNER JOIN AmountCoupon ";
-        List<AmountCoupon> amountCoupon=jdbcTemplate.query(amount_query,new Object[]{code}, BeanPropertyRowMapper.newInstance(AmountCoupon.class));
-        if(amountCoupon.isEmpty()){
-            List<PercentCoupon> percentCoupon=jdbcTemplate.query(percent_query, new Object[]{code},BeanPropertyRowMapper.newInstance(PercentCoupon.class));
-            if(percentCoupon.isEmpty()){
-                return new Coupon();
-            }
-            logger.sqlLog(percent_query, "SELECT", createStringArray("PercentCoupon"), createObjectArray());
-            return percentCoupon.get(0);
+
+    public Coupon getCouponByCode(String code) {
+        String percentQuery = "SELECT * FROM " +
+                "(SELECT * FROM Coupon WHERE Coupon.code = ? ) AS Coupon " +
+                "NATURAL INNER JOIN PercentCoupon";
+
+        PercentCoupon percentCoupon;
+        
+        try {
+            percentCoupon = jdbcTemplate.queryForObject(percentQuery,
+                    BeanPropertyRowMapper.newInstance(PercentCoupon.class), code);
+        } catch (Exception e) {
+            percentCoupon = null;
         }
-        logger.sqlLog(amount_query, "SELECT", createStringArray("Coupon"), createObjectArray());
-        return amountCoupon.get(0);
+        
+        
+        if (percentCoupon != null) {
+            logger.sqlLog(percentQuery, createObjectArray(code));
+            return percentCoupon;
+        }
+        
+        String amountQuery = "SELECT * FROM " +
+                "(SELECT * FROM Coupon WHERE Coupon.code = ? ) AS Coupon " +
+                "NATURAL INNER JOIN AmountCoupon";
+        
+        AmountCoupon amountCoupon;
+        
+        try {
+            amountCoupon = jdbcTemplate.queryForObject(amountQuery,
+                    BeanPropertyRowMapper.newInstance(AmountCoupon.class), code);
+        } catch (Exception e) {
+            amountCoupon = null;
+        }
+        
+        
+        if (amountCoupon != null) {
+            logger.sqlLog(amountQuery, createObjectArray(code));
+            return amountCoupon;
+        }
+        
+        return null;
     }
 }

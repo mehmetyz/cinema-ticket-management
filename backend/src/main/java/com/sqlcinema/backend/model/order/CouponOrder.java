@@ -2,7 +2,7 @@ package com.sqlcinema.backend.model.order;
 
 public enum CouponOrder {
     COUPONCODE("Coupon.code ASC"),
-    EXPIREDATE("Coupon.expire_date ASC"),
+    EXPIRE_DATE("Coupon.expire_date ASC"),
     COUPONLEFT("Coupon.coupon_left ASC"),
     ACTIVATEDATE("Coupon.activate_date ASC");
 

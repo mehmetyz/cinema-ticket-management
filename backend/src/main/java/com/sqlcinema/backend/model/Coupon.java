@@ -1,13 +1,14 @@
 package com.sqlcinema.backend.model;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
 @Data
+@SuperBuilder
 public class Coupon {
     private String code;
-    private int coupon_left;
-    private Date expire_date;
-    private Date activate_date;
-
+    private int couponLeft;
+    private Date expireDate;
+    private Date activateDate;
 }

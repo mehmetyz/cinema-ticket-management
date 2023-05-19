@@ -8,8 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CouponResponse {
-    private float before_price;
-    private float after_price;
-    private String coupon_code;
-
+    private float beforePrice;
+    private float afterPrice;
+    private String couponCode;
 }

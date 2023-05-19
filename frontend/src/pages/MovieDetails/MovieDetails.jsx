@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { Button, Grid, Typography } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
-import { getMovies } from "../../api/movie";
+import { getMovie } from "../../api/movie";
 import Section from "../../components/Section";
 
 import "./MovieDetails.css";
@@ -14,21 +14,25 @@ import { useApplication } from "../../context";
 
 const MovieDetails = () => {
   const path = useParams();
-  const[movie, setMovie] = React.useState(null);
+  const [movie, setMovie] = React.useState(null);
 
   useEffect(() => {
-    const setMovie = async () => {
-      const movies = await getMovies();
-      setMovie(movies.find((movie) => movie.id === parseInt(path.id)));
+    const fetchMovie = async () => {
+      const movie = await getMovie(path.id);
+      setMovie(movie);
     };
 
-    setMovie();
+    fetchMovie();
   }, [path.id]);
 
   return (
     <Section
       height="100vh"
-      bgImage={`https://image.tmdb.org/t/p/original${movie?.backdrop_path}`}
+      bgImage={
+        movie?.backdropPath
+          ? `https://image.tmdb.org/t/p/original${movie.backdropPath}`
+          : `../no-image.jpg`
+      }
       opacity={0.3}
     >
       <Grid
@@ -41,7 +45,11 @@ const MovieDetails = () => {
       >
         <Grid item xs={12} md={3} display="flex" justifyContent="center">
           <img
-            src={`https://image.tmdb.org/t/p/original${movie?.poster_path}`}
+            src={
+              movie?.posterPath
+                ? `https://image.tmdb.org/t/p/original${movie.posterPath}`
+                : `../no-image.jpg`
+            }
             alt={movie?.title}
             className="movie-details__poster"
           />

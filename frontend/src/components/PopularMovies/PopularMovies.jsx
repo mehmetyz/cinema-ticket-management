@@ -2,12 +2,13 @@ import React, { useEffect } from "react";
 
 import { Container, Grid, Typography, Button, Link } from "@mui/material";
 import { blue } from "@mui/material/colors";
+import { produce } from "immer";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 import Section from "../Section";
 import MovieCard from "../MovieCard";
 import { getMovieCount } from "../../utils/resize";
-import { getMovies } from "../../api/movie";
+import { getMovies, getPopularMovies } from "../../api/movie";
 import MovieList from "../MovieList";
 
 const styles = {
@@ -18,46 +19,20 @@ const styles = {
 
 const PopularMovies = ({ genres }) => {
   const [movies, setMovies] = React.useState([]);
-  const [filter, setFilter] = React.useState({ genre: 0 });
+  const [filter, setFilter] = React.useState({ genreId: 0, size: 50 });
 
   useEffect(() => {
-    const setMovies = async () => {
-      let currentMovies = await getMovies();
-      if (filter && Object.keys(filter).length > 0) {
-        Object.keys(filter).forEach((key) => {
-          currentMovies = currentMovies.filter((movie) => {
-            if (key === "genre") {
-              if (filter[key] === 0) {
-                return (
-                  movie?.rating > 200
-                );
-              }
-
-              return movie.genre.filter((genre) => genre.name === filter[key])
-            }
-            return movie[key] === filter[key];
-          });
-        });
-      }
-      currentMovies = currentMovies.sort((a, b) =>
-        parseFloat(b.vote_average) - parseFloat(a.vote_average) > 0 ? 1 : -1
-      );
-      setMovies(currentMovies);
+    const fetchMovies = async () => {
+      const popularMovies = await getPopularMovies(filter);
+      setMovies(popularMovies);
     };
-    setMovies();
-  }, [filter]);
-
-  useEffect(() => {
-    const resize = () => {
-      const count = getMovieCount();
-      setFilter({ count });
-    };
-    window.addEventListener("resize", resize);
+    fetchMovies();
 
     return () => {
-      window.removeEventListener("resize", resize);
+      setMovies([]);
     };
-  }, []);
+  }, [filter]);
+
 
   return (
     <Section id="movies" height="200vh" bgImage="/bg.jpg" opacity={0.6}>
@@ -103,13 +78,13 @@ const PopularMovies = ({ genres }) => {
           mt={10}
         >
           {genres.map((genre) => (
-            <Grid key={genre.id} item mr={2}>
+            <Grid key={genre.genreIdd} item mr={2}>
               <Button
                 underline="none"
                 sx={{
                   color: "#fff",
                   backgroundColor:
-                    filter.genre === genre.id && styles.primary.color,
+                    filter.genreId === genre.genreId && styles.primary.color,
                   fontSize: "14px",
                   fontWeight: "600",
                   letterSpacing: "1px",
@@ -123,7 +98,11 @@ const PopularMovies = ({ genres }) => {
                 }}
                 onClick={(e) => {
                   e.preventDefault();
-                  setFilter({ genre: genre.id });
+                  setFilter(
+                    produce((draft) => {
+                      draft.genreId = genre.genreId;
+                    })
+                  );
                 }}
               >
                 {genre.name}
@@ -134,7 +113,7 @@ const PopularMovies = ({ genres }) => {
         <MovieList
           movies={movies}
           pagination={{ count: getMovieCount() }}
-          genre={filter.genre}
+          genre={filter.genreId}
         />
       </Container>
     </Section>

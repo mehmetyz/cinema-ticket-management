@@ -165,7 +165,7 @@ const RandomMovie = () => {
       </Container>
       {movie && movie.trailerLink && (
         <TrailerModal
-          trailUrl={movie?.trailerLink}
+          trailUrl={movie.trailerLink.replace("watch?v=", "embed/")}
           open={open}
           handleClose={() => {
             setOpen(false);

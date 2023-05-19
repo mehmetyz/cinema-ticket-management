@@ -20,24 +20,49 @@ public class MovieServiceImpl implements MovieService {
     public List<Genre> getGenres() {
         return movieRepository.getGenres();
     }
-
+    
     @Override
-    public List<Movie> getMovies(int page, int pageSize) {
-        return movieRepository.getMovies(page, pageSize, MovieOrder.ID);
+    public Movie getMovie(int id) {
+        return movieRepository.getMovieById(id);
     }
 
     @Override
-    public List<Movie> getPopularMovies(int page, int pageSize) {
-        return movieRepository.getMovies(page, pageSize, MovieOrder.POPULARITY.descending());
+    public List<Movie> getMovies(int page, int pageSize, int genreId) {
+        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.ID);
     }
 
     @Override
-    public List<Movie> getNewestMovies(int page, int pageSize) {
-        return movieRepository.getMovies(page, pageSize, MovieOrder.RELEASE_DATE.descending());
+    public List<Movie> getPopularMovies(int page, int pageSize, int genreId) {
+        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.POPULARITY.descending());
+    }
+
+    @Override
+    public List<Movie> getNewestMovies(int page, int pageSize, int genreId) {
+        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.RELEASE_DATE.descending());
+    }
+
+    @Override
+    public List<Movie> searchMovies(int page, int size, String query) {
+        return movieRepository.searchMovies(page, size, query);
     }
 
     @Override
     public Movie randomMovie() {
         return movieRepository.randomMovie();
+    }
+    
+    @Override
+    public void addMovie(Movie movie) {
+        movieRepository.addMovie(movie);
+    }
+
+    @Override
+    public int getMovieCount(int genreId) {
+        return movieRepository.getMovieCount(genreId);
+    }
+
+    @Override
+    public int getMovieCount(String query) {
+        return movieRepository.getMovieCountByQuery(query);
     }
 }

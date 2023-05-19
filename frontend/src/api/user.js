@@ -32,8 +32,8 @@ export async function logout() {
     clearApplicationData();
 }
 
-export function getUser(id) {
-    return axios.get(`${config.API_URL}/user/${id}`, {
+export function getUser() {
+    return axios.get(`${config.API_URL}/user/me`, {
         headers: {
             Authorization: `Bearer ${loadAuthToken()}`
         }

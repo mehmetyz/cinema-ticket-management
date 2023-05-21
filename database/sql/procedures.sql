@@ -496,7 +496,7 @@ CREATE PROCEDURE delete_coupon (
     IN code VARCHAR(20)
 )
 BEGIN
-    DELETE FROM Coupon WHERE code = code;
+    DELETE FROM Coupon c WHERE code = c.code;
 END $$
 
 CREATE PROCEDURE delete_reservation (

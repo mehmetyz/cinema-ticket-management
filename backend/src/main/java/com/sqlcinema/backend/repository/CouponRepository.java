@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,5 +99,30 @@ public class CouponRepository {
         }
         
         return null;
+    }
+    public Coupon createCoupon(CouponRequest couponRequest) {
+
+
+        String createQuery="CALL create_coupon(\""+couponRequest.getCode()+"\","+couponRequest.getCouponLeft()+",STR_TO_DATE(\""+new SimpleDateFormat("dd,MM,yyyy").format(couponRequest.getExpireDate())+"\",\"%d,%m,%Y\"),STR_TO_DATE(\""
+                +new SimpleDateFormat("dd,MM,yyyy").format(couponRequest.getActivateDate())+"\",\"%d,%m,%Y\"),\""+couponRequest.getType()+"\","+couponRequest.getDiscount()+","+couponRequest.getLimit()+")";
+
+        jdbcTemplate.execute(createQuery);
+        logger.sqlLog(createQuery);
+        return couponRequest;
+    }
+
+    public Coupon updateCoupon(String code, CouponRequest couponRequest) {
+        String updateQuery="CALL update_coupon(\""+code+"\","+couponRequest.getCouponLeft()+",STR_TO_DATE(\""+new SimpleDateFormat("dd,MM,yyyy").format(couponRequest.getExpireDate())+"\",\"%d,%m,%Y\"),STR_TO_DATE(\""
+                +new SimpleDateFormat("dd,MM,yyyy").format(couponRequest.getActivateDate())+"\",\"%d,%m,%Y\"),\""+couponRequest.getType()+"\","+couponRequest.getDiscount()+","+couponRequest.getLimit()+")";;
+        jdbcTemplate.execute(updateQuery);
+        logger.sqlLog(updateQuery);
+        couponRequest.setCode(code);
+        return couponRequest;
+    }
+
+    public void deleteCoupon(String code) {
+        String deleteQuery="CALL delete_coupon(\""+code+"\")";
+        jdbcTemplate.execute(deleteQuery);
+        logger.sqlLog(deleteQuery);
     }
 }

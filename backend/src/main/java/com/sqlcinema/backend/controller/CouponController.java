@@ -5,6 +5,7 @@ import com.sqlcinema.backend.model.CouponType;
 import com.sqlcinema.backend.model.request.CouponRequest;
 import com.sqlcinema.backend.service.CouponService;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class CouponController {
     
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/")
-    public ResponseEntity<Coupon> createCoupon(@RequestBody CouponRequest couponRequest) {
+    public ResponseEntity<Coupon> createCoupon(@RequestBody @DateTimeFormat(pattern="yyyy-MM-dd") CouponRequest couponRequest) {
         return ok(couponService.createCoupon(couponRequest));
     }
     

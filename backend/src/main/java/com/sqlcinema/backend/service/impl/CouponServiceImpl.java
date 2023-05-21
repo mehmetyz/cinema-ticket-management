@@ -26,4 +26,15 @@ public class CouponServiceImpl implements CouponService {
     public Coupon getCouponByCode(String code){
         return couponRepository.getCouponByCode(code);
     }
+    public void deleteCoupon(String code) {
+        couponRepository.deleteCoupon(code);
+    }
+
+    public Coupon updateCoupon(String code, CouponRequest couponRequest) {
+        return couponRepository.updateCoupon(code,couponRequest);
+    }
+
+    public Coupon createCoupon(CouponRequest couponRequest) {
+        return couponRepository.createCoupon(couponRequest);
+    }
 }

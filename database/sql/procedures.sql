@@ -216,14 +216,12 @@ END $$
     
 
 CREATE PROCEDURE create_seat (
-    IN theatre_name VARCHAR(100),
+    IN theatre_id INT,
     IN seat_code VARCHAR(10),
     IN seat_type VARCHAR(20)
 )
 BEGIN
-    DECLARE _theatre_id INT;
-    SELECT theatre_id INTO _theatre_id FROM Theatre WHERE name = theatre_name;
-    INSERT INTO Seat(theatre_id, seat_code, seat_type) VALUES(_theatre_id, seat_code, seat_type);
+    INSERT INTO Seat(theatre_id, seat_code, seat_type) VALUES(theatre_id, seat_code, seat_type);
 END $$
 
 CREATE PROCEDURE assign_movie_genre (
@@ -284,6 +282,7 @@ DROP PROCEDURE IF EXISTS update_manager;
 DROP PROCEDURE IF EXISTS update_ticket;
 DROP PROCEDURE IF EXISTS update_user_movie_comment;
 DROP PROCEDURE IF EXISTS update_coupon;
+DROP PROCEDURE IF EXISTS update_seat;
 
 DELIMITER $$
 
@@ -323,6 +322,17 @@ BEGIN
         name = IFNULL(name, t.name),
         is_available = IFNULL(is_available, t.is_available)
     WHERE t.theatre_id = theatre_id;
+END $$
+
+CREATE PROCEDURE update_seat (
+    IN theatre_id INT,
+    IN seat_code VARCHAR(10),
+    IN seat_type VARCHAR(20)
+)
+BEGIN
+    UPDATE Seat S SET
+        S.seat_type = IFNULL(seat_type, S.seat_type)
+    WHERE S.theatre_id = theatre_id and S.seat_code=seat_code;
 END $$
 
 CREATE PROCEDURE update_user (
@@ -441,6 +451,7 @@ DROP PROCEDURE IF EXISTS delete_genre;
 DROP PROCEDURE IF EXISTS delete_movie_genre;
 DROP PROCEDURE IF EXISTS delete_user_report;
 DROP PROCEDURE IF EXISTS delete_keyword_set;
+DROP PROCEDURE IF EXISTS delete_seat;
 
 DELIMITER $$
 CREATE PROCEDURE delete_user (
@@ -448,6 +459,14 @@ CREATE PROCEDURE delete_user (
 )
 BEGIN
     DELETE FROM User WHERE user_id = user_id;
+END $$
+
+CREATE PROCEDURE delete_seat (
+    IN theatre_id INT,
+    IN seat_code VARCHAR(10)
+)
+BEGIN
+    DELETE FROM Seat S WHERE S.theatre_id = theatre_id and S.seat_code=seat_code;
 END $$
 
 CREATE PROCEDURE unassign_manager (
@@ -475,7 +494,7 @@ CREATE PROCEDURE delete_theatre (
     IN theatre_id INT
 )
 BEGIN
-    DELETE FROM Theatre WHERE theatre_id = theatre_id;
+    DELETE FROM Theatre T WHERE theatre_id = T.theatre_id;
 END $$
 
 CREATE PROCEDURE delete_ticket (

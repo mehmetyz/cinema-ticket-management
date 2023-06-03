@@ -382,9 +382,9 @@ END $$
 
 CREATE PROCEDURE update_ticket (
     IN ticket_id INT,
-    IN price FLOAT,
-    IN show_time DATETIME,
-    IN theatre_id INT
+	IN theatre_id INT,
+	IN show_time DATETIME,
+    IN price FLOAT
 )
 BEGIN
     UPDATE Ticket t SET
@@ -501,7 +501,7 @@ CREATE PROCEDURE delete_ticket (
     IN ticket_id INT
 )
 BEGIN
-    DELETE FROM Ticket WHERE ticket_id = ticket_id;
+    DELETE FROM Ticket T WHERE T.ticket_id = ticket_id;
 END $$
 
 CREATE PROCEDURE delete_user_movie_comment (

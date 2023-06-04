@@ -10,5 +10,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TheatreResponse extends Theatre {
-    int seatSize;
+    private int seatSize;
 }

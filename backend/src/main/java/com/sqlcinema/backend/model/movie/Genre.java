@@ -1,4 +1,4 @@
-package com.sqlcinema.backend.model;
+package com.sqlcinema.backend.model.movie;
 
 import lombok.Data;
 @Data

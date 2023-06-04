@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Data
 public class UserResponse {
+    private int userId;
     private String username;
     private String email;
     private String fullName;
@@ -18,6 +19,7 @@ public class UserResponse {
     
     public static UserResponse fromUser(User user) {
         UserResponse userResponse = new UserResponse();
+        userResponse.setUserId(user.getUserId());
         userResponse.setEmail(user.getEmail());
         userResponse.setFullName(user.getFullName());
         userResponse.setAvatarName(user.getAvatarName());

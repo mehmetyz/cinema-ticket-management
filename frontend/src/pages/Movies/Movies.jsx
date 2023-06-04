@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import Section from "../../components/Section";
 
@@ -24,27 +24,28 @@ const Movies = () => {
 
   React.useEffect(() => {
     const fetchMovies = async () => {
-      let movies, count;
-
       if (query) {
-        movies = await search({ query, page, size: MOVIE_PER_PAGE });
-        count = await getMovieCountByQuery(query);
+        const movies = await search({ query, page, size: MOVIE_PER_PAGE });
+        const count = await getMovieCountByQuery(query);
+
+        setMovies(movies);
+        setCount(count);
       } else {
-        movies = await getMovies({
+        const movies = await getMovies({
           genreId: genre || 0,
           page,
           size: MOVIE_PER_PAGE,
         });
-        count = await getMovieCount(genre || 0);
+        const count = await getMovieCount(genre || 0);
+        setCount(count);
+        setMovies(movies);
       }
-
-      setCount(count);
-      setMovies(movies);
     };
     fetchMovies();
 
     return () => {
       setMovies([]);
+      setCount(0);
     };
   }, [genre, page, query]);
 

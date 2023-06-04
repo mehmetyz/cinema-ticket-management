@@ -8,7 +8,7 @@ USE SQLCinema;
 -- DROP 
 DROP TABLE IF EXISTS User;
 DROP TABLE IF EXISTS UserAccount;
-DROP TABLE IF EXISTS UserReport;
+DROP TABLE IF EXISTS Activity;
 DROP TABLE IF EXISTS Manager;
 DROP TABLE IF EXISTS FavoriteMovie;
 DROP TABLE IF EXISTS UserMovieComment;
@@ -112,13 +112,13 @@ CREATE TABLE Ticket (
 );
 
 
-CREATE TABLE UserReport (
-    report_id INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE Activity (
+    activity_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
-    report_body VARCHAR(255) NOT NULL,
+    activity_type VARCHAR(30) NOT NULL,
+    activity_body VARCHAR(255) NOT NULL,
     issue_timestamp LONG NOT NULL,
-    PRIMARY KEY (report_id),
-    FOREIGN KEY (user_id) REFERENCES User(user_id) 
+    PRIMARY KEY (activity_id)
 );
 
 CREATE TABLE Manager (

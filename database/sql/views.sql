@@ -21,7 +21,7 @@ INNER JOIN Ticket t ON r.ticket_id = t.ticket_id
 INNER JOIN Movie m ON t.movie_id = m.movie_id;
 
 CREATE VIEW available_seats AS
-SELECT t.ticket_id, s.seat_code
+SELECT t.ticket_id, s.seat_code, s.seat_type
 FROM Ticket t
 INNER JOIN Seat s ON t.theatre_id = s.theatre_id
 WHERE s.seat_code NOT IN 

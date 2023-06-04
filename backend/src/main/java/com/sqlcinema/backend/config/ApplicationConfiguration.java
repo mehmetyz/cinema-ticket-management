@@ -23,6 +23,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
@@ -43,7 +44,7 @@ public class ApplicationConfiguration {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return new CustomLogger(this.getClass().getPackageName(), null, processor);
+        return new CustomLogger(processor);
     }
 
 
@@ -55,7 +56,15 @@ public class ApplicationConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedHeaders(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfiguration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfiguration.setAllowedOriginPatterns(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setMaxAge(3600L);
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
         return source;
     }
 

@@ -1,8 +1,11 @@
 package com.sqlcinema.backend.service.impl;
 
-import com.sqlcinema.backend.model.Genre;
-import com.sqlcinema.backend.model.Movie;
+import com.sqlcinema.backend.model.movie.Genre;
+import com.sqlcinema.backend.model.movie.Movie;
+import com.sqlcinema.backend.model.movie.MovieComment;
+import com.sqlcinema.backend.model.movie.Person;
 import com.sqlcinema.backend.model.order.MovieOrder;
+import com.sqlcinema.backend.model.request.MovieRequest;
 import com.sqlcinema.backend.repository.MovieRepository;
 import com.sqlcinema.backend.service.MovieService;
 import lombok.AllArgsConstructor;
@@ -52,8 +55,8 @@ public class MovieServiceImpl implements MovieService {
     }
     
     @Override
-    public void addMovie(Movie movie) {
-        movieRepository.addMovie(movie);
+    public int addMovie(MovieRequest movie) {
+        return movieRepository.addMovie(movie);
     }
 
     @Override
@@ -64,5 +67,31 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public int getMovieCount(String query) {
         return movieRepository.getMovieCountByQuery(query);
+    }
+
+    @Override
+    public void deleteMovie(int movieId) {
+        movieRepository.deleteMovie(movieId);
+    }
+
+    @Override
+    public void updateMovie(int movieId, MovieRequest movie) {
+        movieRepository.updateMovie(movieId, movie);
+    }
+
+   @Override
+    public List<Person> getCast(int movieId) {
+       return movieRepository.getPeople(movieId);
+   }
+
+    @Override
+    public List<MovieComment> getComments(int movieId, int page, int pageSize) {
+        return movieRepository.getComments(movieId, page, pageSize);
+        
+    }
+
+    @Override
+    public String getKeywords(int movieId) {
+        return movieRepository.getKeywords(movieId);
     }
 }

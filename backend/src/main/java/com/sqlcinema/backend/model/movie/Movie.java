@@ -1,11 +1,17 @@
-package com.sqlcinema.backend.model;
+package com.sqlcinema.backend.model.movie;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
+@RequiredArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class Movie {
     private int movieId;
     private String title;

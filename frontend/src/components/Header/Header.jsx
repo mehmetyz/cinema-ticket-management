@@ -8,6 +8,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import "./Header.css";
 import { useApplication } from "../../context";
 import UserHeader from "../UserHeader";
+import { red } from "@mui/material/colors";
+import { loadUser } from "../../utils/localStorage";
 
 const Header = () => {
   const [search, setSearch] = React.useState("");
@@ -28,8 +30,12 @@ const Header = () => {
         }
       >
         <Container maxWidth="m" sx={{ py: 2 }}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} sm={6} md={2}>
+          <Grid
+            container
+            spacing={4}
+            justifyContent={"space-between"}
+          >
+            <Grid item xs={12} sm={12} md={3}>
               <div className="logo">
                 <img src="/logo.png" alt="Logo" />
                 <Typography
@@ -50,6 +56,27 @@ const Header = () => {
             <Grid item xs={12} sm={6} md={context.isAuth ? 8 : 9}>
               <div className="menu">
                 <ul>
+                  {context.isAuth && loadUser().role.toUpperCase() !== "USER" ? (
+                    <li>
+                      <Link
+                        className="nav-link"
+                        href="/dashboard"
+                        sx={{
+                          color: "#fff !important",
+                          backgroundColor: red[800] + " !important",
+                          padding: "8px",
+                          borderRadius: "3px",
+
+                          ["&:hover"]: {
+                            backgroundColor: red[500] + " !important",
+                            color: "#fff !important",
+                          },
+                        }}
+                      >
+                        Dashboard
+                      </Link>
+                    </li>
+                  ) : null}
                   <li>
                     <Link className="nav-link" href="/">
                       Home
@@ -90,35 +117,42 @@ const Header = () => {
                       </form>
                     </div>
                   </li>
-                  <Divider
-                    orientation="vertical"
-                    flexItem
-                    sx={{ borderColor: "#fafafa !important" }}
-                  />
+                  <li>
+                    <Divider
+                      orientation="vertical"
+                      flexItem
+                      sx={{ borderColor: "#fafafa !important" }}
+                    />
+                  </li>
+                  <li>
+                    {context.isAuth ? (
+                      <UserHeader logout={context.logout} />
+                    ) : (
+                      <Link
+                        className="nav-link"
+                        href={
+                          location.pathname === "/login"
+                            ? "/register"
+                            : "/login"
+                        }
+                        sx={{
+                          padding: "8px 10px",
+                          width: "max-content",
+                          borderRadius: "3px",
+                          borderBottom: "2px solid #119eba",
+                          transition: "all 0.3s ease-in-out !important",
+                          ["&:hover"]: {
+                            backgroundColor: "#119eba !important",
+                            color: "#fff !important",
+                          },
+                        }}
+                      >
+                        {location.pathname === "/login" ? "Register" : "Login"}
+                      </Link>
+                    )}
+                  </li>
                 </ul>
               </div>
-            </Grid>
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={context.isAuth ? 2 : 1}
-              justifyContent="center"
-              display="flex"
-            >
-              {context.isAuth ? (
-                <UserHeader logout={context.logout} />
-              ) : (
-                <div className="login-btn">
-                  <Link
-                    href={
-                      location.pathname === "/login" ? "/register" : "/login"
-                    }
-                  >
-                    {location.pathname === "/login" ? "Register" : "Login"}
-                  </Link>
-                </div>
-              )}
             </Grid>
           </Grid>
         </Container>

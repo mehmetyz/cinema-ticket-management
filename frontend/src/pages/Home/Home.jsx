@@ -1,49 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-import Footer from "../../components/Footer";
-import PopularMovies from "../../components/PopularMovies";
-import RandomMovie from "../../components/RandomMovie";
+import Footer from '../../components/Footer';
+import PopularMovies from '../../components/PopularMovies';
+import RandomMovie from '../../components/RandomMovie';
 
-import { getMovies } from "../../api/movie";
+import { getMovies } from '../../api/movie';
 
-import "./Home.css";
+import './Home.css';
+import ApplicationContext from '../../context';
 
-const Home = ({ genres }) => {
-  const [randomMovie, setRandomMovie] = React.useState(null);
+const Home = () => {
   const scrollBtn = React.useRef(null);
 
   useEffect(() => {
-    const fetchRandomMovie = async () => {
-      const randomMovie = await getMovies();
-      setRandomMovie(randomMovie);
-    };
-    fetchRandomMovie();
-
-    return () => {
-      setRandomMovie(null);
-    };
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("scroll", () => {
+    window.addEventListener('scroll', () => {
       if (window.scrollY > 100) {
-        scrollBtn.current.style.display = "block";
+        scrollBtn.current.style.display = 'block';
       } else {
-        scrollBtn.current.style.display = "none";
+        scrollBtn.current.style.display = 'none';
       }
     });
 
     return () => {
-      window.removeEventListener("scroll", () => {});
+      window.removeEventListener('scroll', () => {});
     };
   }, []);
 
   return (
     <>
-      <RandomMovie movie={randomMovie} genres={genres} />
-      <PopularMovies genres={genres} />
+      <RandomMovie />
+      <ApplicationContext.Consumer>{({ genres }) => <PopularMovies genres={genres} />}</ApplicationContext.Consumer>
       <Footer />
 
       <button
@@ -51,7 +39,7 @@ const Home = ({ genres }) => {
         data-target="html"
         ref={scrollBtn}
         onClick={() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       >
         <KeyboardArrowUpIcon />

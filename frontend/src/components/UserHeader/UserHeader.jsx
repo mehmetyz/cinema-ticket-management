@@ -11,7 +11,6 @@ import React from "react";
 import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 import ShopIcon from "@mui/icons-material/Shop";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { navigate } from "../../utils/navigate";
 
 const styles = {
   iconButton: {
@@ -46,7 +45,7 @@ const UserHeader = ({ logout }) => {
   };
 
   const handleUserProfile = () => {
-    navigate("/profile", 0);
+    navigate("/profile", { replace: true });
     handleClose();
   };
 

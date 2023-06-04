@@ -1,8 +1,10 @@
 package com.sqlcinema.backend.controller;
 
 import com.sqlcinema.backend.common.CustomLogger;
+import com.sqlcinema.backend.manager.ActivityManager;
 import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.UserAccount;
+import com.sqlcinema.backend.model.activity.ActivityType;
 import com.sqlcinema.backend.model.request.LoginRequest;
 import com.sqlcinema.backend.model.request.RegisterRequest;
 import com.sqlcinema.backend.model.response.LoginResponse;
@@ -29,6 +31,7 @@ public class AccountController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final CustomLogger logger;
+    private final ActivityManager activityManager;
     
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -50,6 +53,7 @@ public class AccountController {
                 .token(jwtService.generateToken(userAccount))
                 .userId(userAccount.getUserId()).build();
         
+        activityManager.addActivity(userAccount.getUserId(), ActivityType.LOGIN, "User has logged in");
         return ok(response);
     }
     
@@ -67,6 +71,8 @@ public class AccountController {
                 registerRequest.getEmail(),
                 registerRequest.getPassword());
         
+        int userId = userService.getUserByEmail(registerRequest.getEmail()).getUserId();
+        activityManager.addActivity(userId, ActivityType.REGISTER, "User has registered");
         return ok("User registered");
     }
     
@@ -75,6 +81,8 @@ public class AccountController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> assignUserRole(@RequestParam String username, @RequestParam String role) {
         userAccountService.assignRole(username, Role.valueOf(role));
+        int userId = userAccountService.getUserAccountByUsername(username).getUserId();
+        activityManager.addActivity(userId, ActivityType.ASSIGN_ROLE, "User role changed");
         return ok("User role assigned");
     }
     

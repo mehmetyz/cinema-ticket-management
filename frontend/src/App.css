@@ -12,12 +12,6 @@ body {
     background-color: #464e56;
 }
 
-body>div>div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
 
 .scroll-top {
     position: fixed;

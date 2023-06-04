@@ -1,6 +1,8 @@
 package com.sqlcinema.backend.common;
 
+import com.sqlcinema.backend.model.UserAccount;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,9 +32,11 @@ public class Constants {
                 "/api/account/register",
                 "/api/account/login",
                 LOGOUT_URL,
-                "/api/dev/log/all",
-                "/api/dev/log/clear",
                 "/api/movie/**"
         );
+    }
+    
+    public static UserAccount getCurrentUser() {
+        return (UserAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

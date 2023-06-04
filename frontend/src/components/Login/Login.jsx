@@ -14,8 +14,8 @@ const styles = {
 const Login = () => {
   const context = useApplication();
 
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [username, setUsername] = React.useState("admin");
+  const [password, setPassword] = React.useState("admin0xCODE");
   const handleSubmit = (event) => {
     event.preventDefault();
     context.login(username, password);

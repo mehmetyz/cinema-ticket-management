@@ -1,5 +1,6 @@
 package com.sqlcinema.backend.service;
 
+import com.sqlcinema.backend.model.Seat;
 import com.sqlcinema.backend.model.Ticket;
 import com.sqlcinema.backend.model.response.AirTimesResponse;
 import com.sqlcinema.backend.model.response.AvailableMoviesResponse;
@@ -20,5 +21,6 @@ public interface TicketService {
 
     List<AvailableMoviesResponse> getAvailableMovies();
 
-    List<AirTimesResponse> getAirTimes();
+    List<AirTimesResponse> getAirTimes(String title);
+    List<Seat> getAvailableSeats(int ticketId);
 }

@@ -1,5 +1,6 @@
 package com.sqlcinema.backend.service.impl;
 
+import com.sqlcinema.backend.model.Seat;
 import com.sqlcinema.backend.model.Ticket;
 import com.sqlcinema.backend.model.response.AirTimesResponse;
 import com.sqlcinema.backend.model.response.AvailableMoviesResponse;
@@ -45,7 +46,12 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<AirTimesResponse> getAirTimes() {
-        return ticketRepository.getAirTimes();
+    public List<AirTimesResponse> getAirTimes(String title) {
+        return ticketRepository.getAirTimes(title);
+    }
+
+    @Override
+    public List<Seat> getAvailableSeats(int ticketId) {
+        return ticketRepository.getAvailableSeats(ticketId);
     }
 }

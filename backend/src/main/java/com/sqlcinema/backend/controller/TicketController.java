@@ -1,5 +1,6 @@
 package com.sqlcinema.backend.controller;
 
+import com.sqlcinema.backend.model.Seat;
 import com.sqlcinema.backend.model.Ticket;
 import com.sqlcinema.backend.model.response.AirTimesResponse;
 import com.sqlcinema.backend.model.response.AvailableMoviesResponse;
@@ -66,8 +67,13 @@ public class TicketController {
         return ok(ticketService.getAvailableMovies());
     }
     @PreAuthorize("hasAnyAuthority('ADMIN','USER','MANAGER')")
-    @GetMapping("/airTimes")
-    public ResponseEntity<List<AirTimesResponse>> getAirTimes(){
-        return ok(ticketService.getAirTimes());
+    @GetMapping("/airTimes/{title}")
+    public ResponseEntity<List<AirTimesResponse>> getAirTimes(@PathVariable("title") String title){
+        return ok(ticketService.getAirTimes(title));
+    }
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER','MANAGER')")
+    @GetMapping("/{ticketId}/seats")
+    public ResponseEntity<List<Seat>> getAvailableSeats(@PathVariable("ticketId") int ticketId){
+        return ok(ticketService.getAvailableSeats(ticketId));
     }
 }

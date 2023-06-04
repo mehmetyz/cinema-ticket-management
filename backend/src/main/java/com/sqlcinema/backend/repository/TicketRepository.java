@@ -1,6 +1,7 @@
 package com.sqlcinema.backend.repository;
 
 import com.sqlcinema.backend.common.CustomLogger;
+import com.sqlcinema.backend.model.Seat;
 import com.sqlcinema.backend.model.Ticket;
 import com.sqlcinema.backend.model.response.AirTimesResponse;
 import com.sqlcinema.backend.model.response.AvailableMoviesResponse;
@@ -11,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 
 import static com.sqlcinema.backend.common.Constants.createObjectArray;
@@ -64,9 +66,19 @@ public class TicketRepository {
         return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AvailableMoviesResponse.class));
     }
 
-    public List<AirTimesResponse> getAirTimes() {
-        String query = "SELECT * FROM get_air_times";
+    public List<AirTimesResponse> getAirTimes(String title) {
+        String query = "SELECT * FROM get_air_times WHERE title=?";
         logger.sqlLog(query, createObjectArray(""));
-        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AirTimesResponse.class));
+        return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(AirTimesResponse.class),title);
+    }
+    public List<Seat> getAvailableSeats(int ticketId){
+        String query="SELECT * FROM available_seats WHERE ticket_id=?";
+        logger.sqlLog(query, createObjectArray(""));
+        try{
+            return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Seat.class),ticketId);
+        }
+        catch (Exception E){
+            return Collections.emptyList();
+        }
     }
 }

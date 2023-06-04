@@ -67,16 +67,7 @@ public class TheatreAndSeatRepository {
             return Collections.emptyList();
         }
     }
-    public List<Seat> getAvailableSeats(int ticketId){
-        String query="SELECT * FROM available_seats WHERE ticket_id=?";
-        logger.sqlLog(query, createObjectArray(""));
-        try{
-            return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Seat.class),ticketId);
-        }
-        catch (Exception E){
-            return Collections.emptyList();
-        }
-    }
+
     public void deleteSeat(int theatreId,String seatCode) {
         String deleteQuery="CALL delete_seat("+theatreId+",\""+seatCode+"\")";
         jdbcTemplate.execute(deleteQuery);

@@ -6,7 +6,7 @@ USE SQLCinema;
 
 -- INSERT
 DROP PROCEDURE IF EXISTS create_user;
-DROP PROCEDURE IF EXISTS create_user_report;
+DROP PROCEDURE IF EXISTS create_activity;
 DROP PROCEDURE IF EXISTS assign_manager;
 DROP PROCEDURE IF EXISTS create_movie;
 DROP PROCEDURE IF EXISTS create_reservation;
@@ -36,12 +36,13 @@ BEGIN
     INSERT INTO UserAccount(user_id, username, password) VALUES(LAST_INSERT_ID(), username, password);
 END $$
 
-CREATE PROCEDURE create_user_report(
+CREATE PROCEDURE create_activity(
     IN user_id INT, 
-    IN report_body VARCHAR(255)
+    IN activity_type VARCHAR(30),
+    IN activity_body VARCHAR(255)
 )
 BEGIN
-    INSERT INTO UserReport(user_id, report_body) VALUES(user_id, report_body);
+    INSERT INTO Activity(user_id, activity_type, activity_body, issue_timestamp) VALUES(user_id, activity_type, activity_body, UNIX_TIMESTAMP() * 1000);
 END $$
 
 CREATE PROCEDURE assign_manager(
@@ -240,17 +241,17 @@ END $$
 
 CREATE PROCEDURE create_keyword_set (
     IN movie_name VARCHAR(255),
-    IN keyword MEDIUMTEXT,
+    IN keywords MEDIUMTEXT,
     IN in_place BOOLEAN
 )
 BEGIN
-    DECLARE movie_id INT;
-    SELECT m.movie_id INTO movie_id FROM Movie m WHERE m.title = movie_name;
+    DECLARE _movie_id INT;
+    SELECT m.movie_id INTO _movie_id FROM Movie m WHERE m.title = movie_name;
 
-    IF in_place THEN
-        INSERT INTO KeywordSet(movie_id, keywords) VALUES(movie_id, keyword);
+    IF in_place OR (SELECT COUNT(*) FROM KeywordSet k WHERE k.movie_id = _movie_id) = 0 THEN
+        INSERT INTO KeywordSet(movie_id, keywords) VALUES(_movie_id, keywords);
     ELSE
-        UPDATE KeywordSet SET keywords = CONCAT(keywords, ',', keyword) WHERE movie_id = movie_id;
+        UPDATE KeywordSet k SET k.keywords = keywords WHERE k.movie_id = _movie_id;
     END IF;
 END $$
 
@@ -337,12 +338,15 @@ CREATE PROCEDURE update_user (
 BEGIN
     UPDATE User u SET
         full_name = IFNULL(full_name, u.full_name),
-        username = IFNULL(username, u.username),
         avatar_name = IFNULL(avatar_name, u.avatar_name),
         phone_number = IFNULL(phone_number, u.phone_number),
-        birth_date = IFNULL(birth_date, u.birth_date),
-        password = IFNULL(password, u.password)
+        birth_date = IFNULL(birth_date, u.birth_date)
     WHERE u.user_id = user_id;
+
+    UPDATE UserAccount ua SET
+        username = IFNULL(username, ua.username),
+        password = IFNULL(password, ua.password)
+    WHERE ua.user_id = user_id;
 END $$
 
 CREATE PROCEDURE update_person (
@@ -364,9 +368,11 @@ CREATE PROCEDURE update_manager (
     IN role VARCHAR(20)
 )
 BEGIN
-    UPDATE Manager m SET
-        role = IFNULL(role, m.role)
-    WHERE m.user_id = user_id;
+  IF (SELECT COUNT(*) FROM Manager m WHERE m.user_id = user_id) = 0 THEN
+    INSERT INTO Manager(user_id, role) VALUES(user_id, role);
+  ELSE
+    UPDATE Manager m SET m.role = role WHERE m.user_id = user_id;
+  END IF;
 END $$
 
 
@@ -439,7 +445,7 @@ DROP PROCEDURE IF EXISTS delete_coupon;
 DROP PROCEDURE IF EXISTS delete_reservation;
 DROP PROCEDURE IF EXISTS delete_genre;
 DROP PROCEDURE IF EXISTS delete_movie_genre;
-DROP PROCEDURE IF EXISTS delete_user_report;
+DROP PROCEDURE IF EXISTS delete_activity;
 DROP PROCEDURE IF EXISTS delete_keyword_set;
 
 DELIMITER $$
@@ -521,11 +527,11 @@ BEGIN
     DELETE FROM MovieGenre mg WHERE mg.movie_id = movie_id AND mg.genre_id = genre_id;
 END $$
 
-CREATE PROCEDURE delete_user_report (
-    IN report_id INT
+CREATE PROCEDURE delete_activity (
+    IN activity_id INT
 )
 BEGIN
-    DELETE FROM UserReport ur WHERE ur.report_id = report_id;
+    DELETE FROM Activity a WHERE a.activity_id = activity_id;
 END $$
 
 CREATE PROCEDURE delete_keyword_set (

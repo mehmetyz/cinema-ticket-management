@@ -6,7 +6,6 @@ import MovieCard from "../MovieCard";
 
 import { useApplication } from "../../context";
 
-import { calcPage } from "../../utils/resize";
 import { handleScroll } from "../../utils/resize";
 import { blue } from "@mui/material/colors";
 

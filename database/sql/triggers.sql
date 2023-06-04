@@ -57,14 +57,6 @@ BEGIN
     UPDATE Reservation SET created_at = CURRENT_TIMESTAMP
      WHERE reservation_id = NEW.reservation_id;
 END $$
-
-CREATE TRIGGER add_timestamp_user_report
-BEFORE INSERT ON UserReport
-FOR EACH ROW
-BEGIN
-    SET NEW.issue_timestamp = CURRENT_TIMESTAMP;
-END $$
-
 DELIMITER ;
 CREATE EVENT delete_expired_coupon
 ON SCHEDULE EVERY 1 DAY DO
@@ -74,3 +66,7 @@ DELETE FROM Coupon WHERE expire_date < CURRENT_TIMESTAMP;
 CREATE EVENT delete_expired_ticket
 ON SCHEDULE EVERY 1 DAY DO
 DELETE FROM Ticket WHERE show_time < CURRENT_TIMESTAMP; 
+
+CREATE EVENT delete_expired_activities
+ON SCHEDULE EVERY 5 HOUR DO
+DELETE FROM Activity WHERE issue_timestamp <  UNIX_TIMESTAMP(CURRENT_TIMESTAMP - INTERVAL 5 HOUR) * 5;

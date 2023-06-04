@@ -36,7 +36,7 @@ const RandomMovie = () => {
   return (
     <Section
       id="recommend"
-      bgImage={"https://image.tmdb.org/t/p/original" + movie?.backdropPath}
+      bgImage={ movie?.backdropPath ? `https://image.tmdb.org/t/p/original${movie?.backdropPath}` : "/no-image.jpg"}
       height="100vh"
       opacity={0.3}
     >

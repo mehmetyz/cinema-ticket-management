@@ -1,8 +1,12 @@
 package com.sqlcinema.backend.controller;
 
-import com.sqlcinema.backend.model.Genre;
-import com.sqlcinema.backend.model.Movie;
+import com.sqlcinema.backend.manager.ActivityManager;
 import com.sqlcinema.backend.model.UserAccount;
+import com.sqlcinema.backend.model.activity.ActivityType;
+import com.sqlcinema.backend.model.movie.Genre;
+import com.sqlcinema.backend.model.movie.Movie;
+import com.sqlcinema.backend.model.movie.MovieComment;
+import com.sqlcinema.backend.model.movie.Person;
 import com.sqlcinema.backend.model.request.MovieRequest;
 import com.sqlcinema.backend.service.MovieService;
 import lombok.AllArgsConstructor;
@@ -13,13 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.sqlcinema.backend.common.Constants.getCurrentUser;
+
 @RestController
 @RequestMapping("/api/movie")
 @AllArgsConstructor
 public class MovieController {
 
     private final MovieService movieService;
-
+    private final ActivityManager activityManager;
+    
     @GetMapping("/genres")
     public ResponseEntity<List<Genre>> getGenres() {
         return ResponseEntity.ok(movieService.getGenres());
@@ -75,26 +82,56 @@ public class MovieController {
     }
     
     
-    @PostMapping("/")
+    @PostMapping("/")                                                                   
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Movie> addMovie(@RequestBody MovieRequest movie) {
+
+        System.out.println("Movie: " + movie);
+        
         int movieId = movieService.addMovie(movie);
-        System.out.println(movieId);
+        activityManager.addActivity(getCurrentUser().getUserId(), 
+                ActivityType.CREATE, "Movie " + movie.getTitle() + " added");
         return ResponseEntity.ok(movieService.getMovie(movieId));
     }
     
     @DeleteMapping("/{movieId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Void> deleteMovie(@PathVariable("movieId") int movieId) {
+        Movie movie = movieService.getMovie(movieId);
         movieService.deleteMovie(movieId);
+        activityManager.addActivity(getCurrentUser().getUserId(), 
+                ActivityType.DELETE, "Movie " + movie.getTitle() + " deleted");
         return ResponseEntity.ok().build();
     }
     
     @PutMapping("/{movieId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")   
     public ResponseEntity<Movie> updateMovie(@PathVariable("movieId") int movieId, @RequestBody MovieRequest movie) {
         movieService.updateMovie(movieId, movie);
+        activityManager.addActivity(getCurrentUser().getUserId(), 
+                ActivityType.UPDATE, "Movie " + movie.getTitle() + " updated");
         return ResponseEntity.ok(movieService.getMovie(movieId));
+    }
+    
+    
+    @GetMapping ("/{movieId}/cast")
+    public ResponseEntity<List<Person>> getCast(@PathVariable("movieId") int movieId) {
+        List<Person> res = movieService.getCast(movieId);
+        return ResponseEntity.ok(res);
+    }
+    
+    @GetMapping ("/{movieId}/comments")
+    public ResponseEntity<List<MovieComment>> getComments(@PathVariable("movieId") int movieId,
+                                                          @RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "10") int size) {
+        List<MovieComment> res = movieService.getComments(movieId, page, size);
+        return ResponseEntity.ok(res);
+    }
+    
+    
+    @GetMapping ("/{movieId}/keywords")
+    public ResponseEntity<String> getKeywords(@PathVariable("movieId") int movieId) {
+        return ResponseEntity.ok(movieService.getKeywords(movieId));
     }
     
 }

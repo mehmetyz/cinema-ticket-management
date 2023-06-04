@@ -33,8 +33,7 @@ const Header = () => {
           <Grid
             container
             spacing={4}
-            justifyContent={"flex-end"}
-            width={"100%"}
+            justifyContent={"space-between"}
           >
             <Grid item xs={12} sm={12} md={3}>
               <div className="logo">
@@ -57,11 +56,11 @@ const Header = () => {
             <Grid item xs={12} sm={6} md={context.isAuth ? 8 : 9}>
               <div className="menu">
                 <ul>
-                  {context.isAuth && loadUser().role.toLowerCase() !== "ADMIN" ? (
+                  {context.isAuth && loadUser().role.toUpperCase() !== "USER" ? (
                     <li>
                       <Link
                         className="nav-link"
-                        href="/"
+                        href="/dashboard"
                         sx={{
                           color: "#fff !important",
                           backgroundColor: red[800] + " !important",

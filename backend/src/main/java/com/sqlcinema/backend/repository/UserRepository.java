@@ -3,14 +3,19 @@ package com.sqlcinema.backend.repository;
 import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.User;
 import com.sqlcinema.backend.model.UserAccount;
-import lombok.RequiredArgsConstructor;
+import com.sqlcinema.backend.model.request.UserUpdateRequest;
+import com.sqlcinema.backend.model.response.UserResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Repository
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -20,7 +25,7 @@ public class UserRepository {
         
         try {
             userAccount = jdbcTemplate.queryForObject("SELECT ua.*, m.role FROM UserAccount ua" +
-                            " INNER JOIN Manager m ON ua.user_id = m.user_id WHERE username = ?",
+                            " LEFT JOIN Manager m ON ua.user_id = m.user_id WHERE username = ?",
                     BeanPropertyRowMapper.newInstance(UserAccount.class), username);
         } catch (EmptyResultDataAccessException e) {
             return null;
@@ -78,12 +83,24 @@ public class UserRepository {
                 BeanPropertyRowMapper.newInstance(User.class), userId);
     }
 
-    public void updateUser(int userId, User user) {
-        jdbcTemplate.update("UPDATE User " +
-                        "SET full_name = ?, avatar_name = ?, phone_number = ?, birth_date = ? " +
-                        "WHERE user_id = ?", user.getFullName(), user.getAvatarName(),
-                user.getPhoneNumber(), user.getBirthDate(), userId);
-
+    public void updateUser(int userId, UserUpdateRequest user) {
+        jdbcTemplate.update("CALL update_user(?, ?, ?, ?, ?, ?, ?)",
+                userId,
+                user.getFullName(),
+                user.getUsername(),
+                user.getAvatarName(),
+                user.getPhoneNumber(),
+                user.getBirthDate(),
+                user.getPassword());
+        
+        
+        if (user.getRole() != null) {
+            if (Role.USER.equals(user.getRole())) {
+                jdbcTemplate.update("CALL unassign_manager(?)", userId);
+            } else {
+                jdbcTemplate.update("CALL update_manager(?, ?)", userId, user.getRole().getAuthority());
+            }
+        }
     }
 
     public User findUserByEmail(String email) {
@@ -92,6 +109,25 @@ public class UserRepository {
                     BeanPropertyRowMapper.newInstance(User.class), email);
         } catch (EmptyResultDataAccessException e) {
             return null;
+        }
+    }
+
+    public List<UserResponse> getUsers() {
+        try {
+            return jdbcTemplate.query("SELECT u.user_id, u.full_name, ua.username, u.email, u.avatar_name, u.phone_number, u.birth_date, m.role " +
+                            "FROM User u " +
+                            "INNER JOIN UserAccount ua ON u.user_id = ua.user_id " +
+                            "LEFT JOIN Manager m ON u.user_id = m.user_id " +
+                            "WHERE ua.status != 'DELETED'", BeanPropertyRowMapper.newInstance(UserResponse.class))
+                    .stream()
+                    .peek(userResponse -> {
+                        if (userResponse.getRole() == null) {
+                            userResponse.setRole(Role.USER);
+                        }
+                    })
+                    .toList();
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
         }
     }
 }                                               

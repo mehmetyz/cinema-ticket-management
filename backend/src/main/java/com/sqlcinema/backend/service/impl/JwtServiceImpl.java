@@ -20,17 +20,20 @@ import static com.sqlcinema.backend.common.Constants.ONE_WEEK_AS_MILLISECONDS;
 
 @Service
 public class JwtServiceImpl implements JwtService {
-    
+
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
+
     @Override
     public String extractRole(String token) {
         return extractClaim(token, Claims::getAudience);
     }
+
     @Override
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -48,7 +51,7 @@ public class JwtServiceImpl implements JwtService {
         if (role == null) {
             throw new RuntimeException("Role not found");
         }
-        
+
         return Jwts.builder()
                 .setSubject(userAccount.getUsername())
                 .setAudience(role.getAuthority())
@@ -57,15 +60,21 @@ public class JwtServiceImpl implements JwtService {
                 .signWith(Keys.hmacShaKeyFor(JWT_SECRET.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     @Override
     public boolean validateToken(String token) {
-        return extractExpiration(token).after(new Date()) && extractUsername(token) != null;
+        try {
+            return extractExpiration(token).after(new Date()) && extractUsername(token) != null;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
+
     private Claims extractAllClaims(String token) {
         Key key = Keys.hmacShaKeyFor(JWT_SECRET.getBytes());
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();

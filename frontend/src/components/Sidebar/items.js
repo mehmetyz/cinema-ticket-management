@@ -3,10 +3,10 @@ import PersonIcon from '@mui/icons-material/Person';
 import MovieCreationIcon from '@mui/icons-material/MovieCreation';
 import StorageIcon from '@mui/icons-material/Storage';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
-import ReportIcon from '@mui/icons-material/Report';
 import ConfirmationNumberIcon from '@mui/icons-material/ConfirmationNumber';
 import DiscountIcon from '@mui/icons-material/Discount';
 
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 
 export default [{
         title: "Dashboard",
@@ -16,6 +16,11 @@ export default [{
     {
         title: "Users",
         icon: PersonIcon,
+        roles: ["ADMIN", "USER_MANAGER"]
+    },
+    {
+        title: "Reservations",
+        icon: BookmarkAddedIcon,
         roles: ["ADMIN", "USER_MANAGER"]
     },
     {
@@ -29,21 +34,10 @@ export default [{
         roles: ["ADMIN", "THEATRE_MANAGER"]
     },
     {
-        title: "Tickets",
-        icon: ConfirmationNumberIcon,
-        roles: ["ADMIN", "THEATRE_MANAGER"]
-    },
-    {
         title: "Coupons",
         icon: DiscountIcon,
         roles: ["ADMIN", "USER_MANAGER"]
     },
-    {
-        title: "Reports",
-        icon: ReportIcon,
-        roles: ["ADMIN", "USER_MANAGER"]
-    },
-
     {
         title: "SQL Queries",
         icon: StorageIcon,

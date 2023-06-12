@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import React from "react";
 
-const getDialgContent = (type, handleClose) => {
+const getDialogContent = (type, handleClose) => {
   switch (type) {
     case "yesno":
       return (
@@ -41,7 +41,7 @@ const CustomDialog = ({ open, title, content, type, handleClose }) => {
           {content ? content : "Are you sure?"}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>{getDialgContent(type, handleClose)}</DialogActions>
+      <DialogActions>{getDialogContent(type, handleClose)}</DialogActions>
     </Dialog>
   );
 };

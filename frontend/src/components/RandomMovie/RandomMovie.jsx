@@ -109,7 +109,7 @@ const RandomMovie = () => {
         >
           <Grid item mr={2}>
             <Link
-              href={`/movie/${movie?.id}/buy`}
+              href={`/checkout/${movie?.movieId}`}
               underline="none"
               sx={{
                 color: "#fff",

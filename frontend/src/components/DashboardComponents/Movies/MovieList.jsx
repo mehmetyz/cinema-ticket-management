@@ -13,6 +13,8 @@ import AddIcon from '@mui/icons-material/Add';
 import EditMovie from './EditMovie';
 import CustomDialog from '../../CustomDialog/CustomDialog';
 import { search } from '../../../api/movie';
+import ReportDownload from '../../ReportDownload';
+import { addNewLine } from '../../../utils/string';
 
 const MOVIE_PER_PAGE = 20;
 
@@ -71,7 +73,10 @@ const MovieList = () => {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={8}>
+        <Grid item xs={2}>
+          <h3 style={{ color: '#fff' }}>Movies</h3>
+        </Grid>
+        <Grid item xs={6}>
           <div className="search-box">
             <form
               onSubmit={(e) => {
@@ -79,7 +84,13 @@ const MovieList = () => {
                 setQuery(e.target[0].value);
               }}
             >
-              <input type="text" placeholder="Search" />
+              <input
+                type="text"
+                placeholder="Search"
+                style={{
+                  borderRadius: '3px 0 0 3px',
+                }}
+              />
               <Button
                 type="submit"
                 sx={{
@@ -93,14 +104,14 @@ const MovieList = () => {
                     background: '#f0f0f0',
                     height: '41px',
                     width: '100%',
-                    borderRadius: '0 5px 5px 0',
+                    borderRadius: '0 3px 3px 0',
                   }}
                 />
               </Button>
             </form>
           </div>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={2}>
           <Button
             variant="contained"
             color="info"
@@ -114,6 +125,25 @@ const MovieList = () => {
           >
             Create New Movie
           </Button>
+        </Grid>
+        <Grid item xs={2}>
+          <ReportDownload
+            dataHandler={getMovies({ page: page, size: MOVIE_PER_PAGE })}
+            sx={{ marginBottom: 2, float: 'right', padding: '12px', width: '100%' }}
+            map={(movie) => {
+              return {
+                'Movie Id': movie.movieId,
+                Title: movie.title,
+                Runtime: getHourAndMinute(movie?.runtime),
+                'Release Date': convertDate(movie?.releaseDate).getFullYear(),
+                Rating: movie.rating.toFixed(1),
+                'Backdrop Image Key \n\n Poster Image Key \n\n Trailer Link': movie.backdropPath + '\n\n' + movie.posterPath + '\n\n' + movie.trailerLink,
+                Keywords: addNewLine(movie.keywords, 30),
+                Genre: addNewLine(movie.genres.map((genre) => genre.name).join(', '), 30),
+              };
+            }}
+            txt={'Download Movie Report'}
+          />
         </Grid>
       </Grid>
 

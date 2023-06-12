@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +19,17 @@ import java.util.List;
 @AllArgsConstructor
 public class UserRepository {
 
+
+    private static final String USER_IMAGE_FILE_PREFIX = "static/images/user_";
+    
     private final JdbcTemplate jdbcTemplate;
 
+    private String getUserImageFile(int userId, String avatarName) {
+        return USER_IMAGE_FILE_PREFIX
+                .concat(String.valueOf(userId))
+                .concat("_").concat(avatarName);
+    }
+    
     public UserAccount findUserAccountByUsername(String username) {
         UserAccount userAccount;
         
@@ -84,14 +94,13 @@ public class UserRepository {
     }
 
     public void updateUser(int userId, UserUpdateRequest user) {
-        jdbcTemplate.update("CALL update_user(?, ?, ?, ?, ?, ?, ?)",
+        jdbcTemplate.update("CALL update_user(?, ?, ?, ?, ?, ?)",
                 userId,
                 user.getFullName(),
                 user.getUsername(),
                 user.getAvatarName(),
                 user.getPhoneNumber(),
-                user.getBirthDate(),
-                user.getPassword());
+                user.getBirthDate());
         
         
         if (user.getRole() != null) {
@@ -101,6 +110,12 @@ public class UserRepository {
                 jdbcTemplate.update("CALL update_manager(?, ?)", userId, user.getRole().getAuthority());
             }
         }
+    }
+    
+    public void updatePassword(int userId, String password) {
+        jdbcTemplate.update("UPDATE UserAccount " +
+                "SET password = ? " +
+                "WHERE user_id = ?", password, userId);
     }
 
     public User findUserByEmail(String email) {
@@ -129,5 +144,39 @@ public class UserRepository {
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    public byte[] getProfile(int userId) {
+        User user = findUserById(userId);
+        
+        if (user == null) {
+            return null;
+        }
+        
+        File file = new File(getUserImageFile(userId, user.getAvatarName()));
+        if (!file.exists()) {
+            return null;
+        }
+
+        try {
+            return new FileInputStream(file).readAllBytes();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public void updateProfile(int userId, byte[] bytes) throws IOException {
+        User user = findUserById(userId);
+        
+        if (user == null) {
+            return;
+        }
+        
+        File file = new File(getUserImageFile(userId, user.getAvatarName()));
+        
+        if (file.exists()) 
+            file.delete();
+        
+        new FileOutputStream(file).write(bytes);
     }
 }                                               

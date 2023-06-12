@@ -38,7 +38,18 @@ public class LogFileProcessor {
         } catch (FileNotFoundException e) {
             logs = new ArrayList<>();
         }
-        logs.add(log);
+
+        Log existing = logs.stream()
+                .filter(l -> l.getSql().equals(log.getSql()))
+                .findFirst()
+                .orElse(null);
+        
+        if (existing != null) {
+            existing.setCount(existing.getCount() + 1);
+        } else {
+            logs.add(log);
+        }
+        
         try {
             write(mapper.writeValueAsString(logs));
         } catch (JsonProcessingException e) {

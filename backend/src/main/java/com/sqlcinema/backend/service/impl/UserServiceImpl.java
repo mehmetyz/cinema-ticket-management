@@ -8,6 +8,7 @@ import com.sqlcinema.backend.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -32,6 +33,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updatePassword(int userId, String password) {
+        userRepository.updatePassword(userId, password);
+    }
+
+    @Override
     public void deleteUser(int userId) {
         userRepository.deleteUser(userId);
     }
@@ -39,5 +45,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponse> getUsers() {
         return userRepository.getUsers();
+    }
+
+    @Override
+    public byte[] getProfile(int userId) {
+        return userRepository.getProfile(userId);
+    }
+
+    @Override
+    public void uploadImage(int userId, byte[] bytes) throws IOException {
+        userRepository.updateProfile(userId, bytes);
     }
 }

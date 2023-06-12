@@ -3,8 +3,7 @@ import React, { useEffect } from 'react';
 import { Grid } from '@mui/material';
 
 import Sidebar from '../../components/Sidebar';
-import { DashboardContent, MovieList, SqlLogs, UserList } from '../../components/DashboardComponents';
-import { getUsers } from '../../api/user';
+import { Coupons, DashboardContent, MovieList, Reservations, SqlLogs, TheatreList, UserList } from '../../components/DashboardComponents';
 
 const Navigate = (page) => {
   switch (page) {
@@ -17,13 +16,19 @@ const Navigate = (page) => {
     case 'Movies':
       return <MovieList />;
 
+    case 'Theatres':
+      return <TheatreList />;
+    case 'Reservations':
+      return <Reservations />;
+    case 'Coupons':
+      return <Coupons />;
     default:
       break;
   }
 };
 
 const Dashboard = () => {
-  const [page, setPage] = React.useState('Movies');
+  const [page, setPage] = React.useState('Coupons');
 
   return (
     <Grid container height="100vh" p={0} m={0}>

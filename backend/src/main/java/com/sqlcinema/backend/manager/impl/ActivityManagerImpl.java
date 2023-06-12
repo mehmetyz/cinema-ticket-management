@@ -16,8 +16,8 @@ public class ActivityManagerImpl implements ActivityManager {
     private final ActivityRepository activityRepository;
 
     @Override
-    public List<Activity> getActivities(int userId, int page, int pageSize) {
-        return activityRepository.getActivities(userId, page, pageSize);
+    public List<Activity> getActivities(int userId, int page, int size) {
+        return activityRepository.getActivities(userId, page, size);
     }
 
     @Override

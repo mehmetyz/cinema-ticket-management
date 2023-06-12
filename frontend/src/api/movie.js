@@ -3,8 +3,15 @@ import {
   API_URL
 } from '../config/config.json';
 import {
-  loadAuthToken
+  loadAuthToken, loadUser
 } from '../utils/localStorage';
+
+
+axios.interceptors.response.use(function (response) {
+  return response;
+}, function (error) {
+  return Promise.resolve(error.response);
+});
 
 export async function getMovies(filter) {
   const response = await axios.get(`${API_URL}/movie/all?${filter ? Object.keys(filter).filter(key => !!filter[key]).map(key => `${key}=${filter[key]}`).join('&') : ''}`);
@@ -41,6 +48,11 @@ export async function getPopularMovies(filter) {
 export async function search(filter) {
   const response = await axios.get(`${API_URL}/movie/search?${filter ? Object.keys(filter).map(key => `${key}=${filter[key]}`).join('&') : ''}`);
 
+  for (let i = 0; i < response.data.length; i++) {
+    const keywords = await axios.get(`${API_URL}/movie/${response.data[i].movieId}/keywords`);
+    response.data[i].keywords = keywords.data;
+  }
+
   return response.data;
 }
 
@@ -54,6 +66,15 @@ export async function getMovieCountByQuery(query) {
   return response.data;
 }
 
+export async function getOnshowMovieCount() {
+  const response = await axios.get(`${API_URL}/movie/onshow/count`, {
+    headers: {
+      "Authorization": `Bearer ${loadAuthToken()}`
+    }
+  });
+  return response.data;
+}
+
 export async function getMovieCast(id) {
   const response = await axios.get(`${API_URL}/movie/${id}/cast`);
   return response.data;
@@ -61,13 +82,13 @@ export async function getMovieCast(id) {
 
 export async function getMovieComments(id, filter) {
   const response = await axios.get(`${API_URL}/movie/${id}/comments?${filter ? Object.keys(filter).map(key => `${key}=${filter[key]}`).join('&') : ''}`);
-  return response.data;
+  return [response.headers['x-total-count'], response.data];
 }
 
 export async function createMovie(movie) {
   movie = {
     ...movie,
-    keywords: movie.keywords.split(',').map(keyword => keyword.trim())
+    keywords: movie.keywords?.split(',').map(keyword => keyword.trim())
   }
 
   const response = await axios.post(`${API_URL}/movie/`, movie, {
@@ -82,7 +103,7 @@ export async function createMovie(movie) {
 export async function updateMovie(movie) {
   movie = {
     ...movie,
-    keywords: movie.keywords.split(',').map(keyword => keyword.trim())
+    keywords: movie.keywords?.split(',').map(keyword => keyword.trim())
   }
 
   const response = await axios.put(`${API_URL}/movie/${movie.movieId}`, movie, {
@@ -99,5 +120,67 @@ export async function deleteMovie(movieId) {
       'Authorization': `Bearer ${loadAuthToken()}`
     }
   });
+  return response.data;
+}
+
+
+export async function checkFavoriteMovie(movieId) {
+
+ if (loadUser() === null) return [];
+
+  const favoriteMovies =  await getFavoriteMovies();
+
+  return favoriteMovies.filter(m => m.movieId === movieId);
+}
+
+export async function getFavoriteMovies() {
+  if (loadUser() === null) return [];
+
+  const response = await axios.get(`${API_URL}/movie/favorites`, {
+    headers: {
+      'Authorization': `Bearer ${loadAuthToken()}`
+    }
+  });
+  return response.data;
+}
+
+export async function addFavoriteMovie(movieId) {
+  const response = await axios.put(`${API_URL}/movie/favorites?movie_id=${movieId}`, {}, {
+    headers: {
+      'Authorization': `Bearer ${loadAuthToken()}`
+    }
+  });
+  return response.data;
+}
+
+export async function removeFavoriteMovie(movieId) {
+  const response = await axios.delete(`${API_URL}/movie/favorites?movie_id=${movieId}`,  {
+    headers: {
+      'Authorization': `Bearer ${loadAuthToken()}`
+    }
+  });
+  return response.data;
+}
+
+export async function addComment(movieId, comment) {
+  const response = await axios.post(`${API_URL}/movie/comments`, {
+    movieId,
+    comment
+  }, {
+    headers: {
+      "Authorization": `Bearer ${loadAuthToken()}`
+    }
+  });
+
+  return response.data;
+}
+
+export async function deleteComment(commentId) {
+  const response = await axios.delete(`${API_URL}/movie/comments/${commentId}`, {
+    headers: {
+      "Authorization": `Bearer ${loadAuthToken()}`
+    }
+  });
+
   return response.data;
 }

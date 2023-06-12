@@ -6,6 +6,13 @@ import {
     loadAuthToken
 } from '../utils/localStorage';
 
+
+axios.interceptors.response.use(function (response) {
+    return response;
+}, function (error) {
+    return Promise.resolve(error.response);
+});
+
 export async function getLogs() {
     const response = await axios.get(`${API_URL}/log/all`, {
         headers: {

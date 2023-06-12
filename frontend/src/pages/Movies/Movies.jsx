@@ -1,30 +1,24 @@
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from 'react';
 
-import Section from "../../components/Section";
+import Section from '../../components/Section';
 
-import {
-  getMovieCount,
-  getMovieCountByQuery,
-  getMovies,
-  search,
-} from "../../api/movie";
-import { useQueryParams } from "../../hook";
+import { getMovieCount, getMovieCountByQuery, getMovies, search } from '../../api/movie';
 
-import MovieList from "../../components/MovieList";
-import { Typography } from "@mui/material";
+import MovieList from '../../components/MovieList';
+import { Typography } from '@mui/material';
+import { getURLParams } from '../../utils/url';
 
 const MOVIE_PER_PAGE = 50;
 
 const Movies = () => {
-  const { genre, query } = useQueryParams();
-
   const [movies, setMovies] = React.useState([]);
   const [count, setCount] = React.useState(0);
   const [page, setPage] = React.useState(1);
 
   React.useEffect(() => {
+    const { query, genre } = getURLParams();
     const fetchMovies = async () => {
-      if (query) {
+      if (query && !genre) {
         const movies = await search({ query, page, size: MOVIE_PER_PAGE });
         const count = await getMovieCountByQuery(query);
 
@@ -47,10 +41,10 @@ const Movies = () => {
       setMovies([]);
       setCount(0);
     };
-  }, [genre, page, query]);
+  }, [page]);
 
   return (
-    <Section height="100vh" bgImage="/bg.jpg" opacity={0.6}>
+    <Section height="100vh" sx={{ backgroundColor: '#00111f' }}>
       {movies && movies.length > 0 && count > 0 ? (
         <MovieList
           movies={movies}
@@ -67,8 +61,8 @@ const Movies = () => {
           sx={{
             fontFamily: "'Poppins', sans-serif",
             fontWeight: 600,
-            color: "#fff",
-            maxWidth: "80%",
+            color: '#fff',
+            maxWidth: '80%',
           }}
         >
           No movies found
@@ -78,4 +72,4 @@ const Movies = () => {
   );
 };
 
-export default Movies;
+export default memo(Movies);

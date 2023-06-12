@@ -80,8 +80,8 @@ CREATE TABLE Reservation (
 
 CREATE TABLE Theatre (
     theatre_id INT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
-    is_available BOOLEAN NOT NULL DEFAULT TRUE,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    available BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (theatre_id)
 );
 
@@ -140,6 +140,7 @@ CREATE TABLE UserMovieComment (
     comment_id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
     movie_id INT NOT NULL,
+    comment_at LONG nOT NULL DEFAULT (UNIX_TIMESTAMP() * 1000),
     comment VARCHAR(255) NOT NULL,
     PRIMARY KEY (comment_id),
     FOREIGN KEY (user_id) REFERENCES User(user_id) ON DELETE CASCADE,

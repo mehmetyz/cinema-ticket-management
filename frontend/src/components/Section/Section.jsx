@@ -1,12 +1,12 @@
 import React from "react";
 
 import "./Section.css";
-const Section = ({ id, dark = false, bgImage, height, opacity, children }) => {
+const Section = ({ id, dark = false, bgImage, height, opacity, children, sx = {} }) => {
   return (
     <section
       className={`section ${dark ? "section-dark" : ""}`}
       id={id}
-      style={{ height: height }}
+      style={{ height: height, ...sx }}
     >
       {bgImage && (
         <div

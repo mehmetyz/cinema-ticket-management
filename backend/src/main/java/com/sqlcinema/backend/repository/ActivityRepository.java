@@ -36,7 +36,7 @@ public class ActivityRepository {
         }
     }
 
-    public List<Activity> getActivities(int userId, int page, int pageSize) {
+    public List<Activity> getActivities(int userId, int page, int size) {
         try {
             String query = "SELECT a.*, au.username FROM Activity a " +
                     "INNER JOIN UserAccount au ON a.user_id = au.user_id";
@@ -45,11 +45,11 @@ public class ActivityRepository {
             }
             
             query += " ORDER BY issue_timestamp DESC" +
-                    " LIMIT " + (page - 1) * pageSize + ", " + pageSize ;
+                    " LIMIT " + (page - 1) * size + ", " + size ;
                             
             
             
-            customLogger.sqlLog(query, createObjectArray(userId, page, pageSize));
+            customLogger.sqlLog(query, createObjectArray(userId, page, size));
             return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Activity.class));
         } catch (Exception e) {
             customLogger.info(e.getMessage());

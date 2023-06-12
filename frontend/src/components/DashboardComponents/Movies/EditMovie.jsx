@@ -33,7 +33,7 @@ const EditMovie = ({ movie, open, setOpen, handleUpdate, ...props }) => {
   }, [open]);
 
   return (
-    <Modal open={open} onClose={() => {}}>
+    <Modal open={open} onClose={() => setOpen(false)}>
       <Box
         sx={{
           position: 'absolute',

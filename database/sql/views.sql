@@ -21,7 +21,7 @@ INNER JOIN Ticket t ON r.ticket_id = t.ticket_id
 INNER JOIN Movie m ON t.movie_id = m.movie_id;
 
 CREATE VIEW available_seats AS
-SELECT t.ticket_id, s.seat_code
+SELECT t.ticket_id, s.seat_code, s.seat_type
 FROM Ticket t
 INNER JOIN Seat s ON t.theatre_id = s.theatre_id
 WHERE s.seat_code NOT IN 
@@ -64,15 +64,15 @@ INNER JOIN Movie ON movie.movie_id=ticket.movie_id
 GROUP BY Movie.title;
 
 CREATE VIEW available_movies AS
-SELECT DISTINCT(Movie.title) FROM Ticket
+SELECT DISTINCT(Movie.title), Ticket.ticket_id FROM Ticket
 INNER JOIN (SELECT ticket_id, COUNT(*) AS available_seat_count FROM available_seats GROUP BY ticket_id) AS seats
 ON Ticket.ticket_id = seats.ticket_id
 AND seats.available_seat_count > 0
 INNER JOIN Movie 
-ON Movie.movie_id=Ticket.movie_id;
+ON Movie.movie_id = Ticket.movie_id;
 
 CREATE VIEW get_air_times AS
-SELECT Movie.title, Ticket.show_time
+SELECT Ticket.ticket_id, Movie.title, Ticket.show_time
 FROM Movie
 INNER JOIN Ticket 
 ON ticket.movie_id = movie.movie_id;

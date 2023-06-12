@@ -11,5 +11,26 @@ const textSearch = (str, search, isCaseSensitive = false) => {
   return str.includes(search);
 };
 
+const addNewLine = (str, positions) => {
+  if (!str || !positions) {
+    return str;
+  }
 
-export { textSearch };
+  let newStr = str;
+
+  for (let i = 0; i < str.length; i++) {
+    if ((i + 1) % positions === 0) {
+      newStr = newStr.slice(0, i) + '\n' + newStr.slice(i);
+    }
+  }
+
+  return newStr;
+
+};
+
+
+
+export {
+  textSearch,
+  addNewLine
+};

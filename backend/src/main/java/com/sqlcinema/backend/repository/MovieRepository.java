@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class MovieRepository {
         }
     }
 
-    public List<Movie> getMovies(int page, int pageSize, int genreId, MovieOrder orderBy) {
+    public List<Movie> getMovies(int page, int size, int genreId, MovieOrder orderBy) {
         String query = "SELECT Movie.* FROM Movie " +
                 (genreId != 0 ? "INNER JOIN MovieGenre ON Movie.movie_id = MovieGenre.movie_id " : "") +
                 (genreId != 0 ? "WHERE MovieGenre.genre_id = ? " : "") +
@@ -46,8 +47,8 @@ public class MovieRepository {
         if (genreId != 0) {
             params.add(genreId);
         }
-        params.add(pageSize);
-        params.add((page - 1) * pageSize);
+        params.add(size);
+        params.add((page - 1) * size);
 
         List<Movie> movies = jdbcTemplate.query(query,
                 BeanPropertyRowMapper.newInstance(Movie.class),
@@ -115,7 +116,7 @@ public class MovieRepository {
                 "OR m.title LIKE ? " +
                 "OR m.overview LIKE ? " +
                 " LIMIT ? OFFSET ?";
-        
+
         List<Movie> movies = jdbcTemplate.query(searchQuery,
                 BeanPropertyRowMapper.newInstance(Movie.class), query, query, query, size, (page - 1) * size);
 
@@ -201,7 +202,7 @@ public class MovieRepository {
 
     public void updateMovie(int movieId, MovieRequest movie) {
         logger.info("Updating movie with id: " + movieId);
-        
+
         String query = "CALL update_movie(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         logger.sqlLog(query, createObjectArray(movieId, movie.toString()));
 
@@ -212,13 +213,13 @@ public class MovieRepository {
         query = "DELETE FROM MovieGenre WHERE movie_id = ?";
         logger.sqlLog(query, createObjectArray(movieId));
         jdbcTemplate.update(query, movieId);
-        
+
         for (Genre genre : movie.getGenres()) {
             query = "CALL assign_movie_genre(?, ?)";
             logger.sqlLog(query, createObjectArray(movieId, genre.getName()));
             jdbcTemplate.update(query, movie.getTitle(), genre.getName());
         }
-        
+
         if (movie.getKeywords() != null) {
             String keywords = String.join(",", movie.getKeywords());
             query = "CALL create_keyword_set(?, ?, FALSE)";
@@ -254,13 +255,25 @@ public class MovieRepository {
 
     public List<MovieComment> getComments(int movieId, int page, int size) {
         String query = "SELECT m.*, ua.username FROM UserMovieComment m INNER JOIN UserAccount ua " +
-                "ON m.user_id = ua.user_id WHERE m.movie_id = ? LIMIT ? OFFSET ?";
+                "ON m.user_id = ua.user_id WHERE m.movie_id = ? " +
+                "ORDER BY m.comment_at DESC LIMIT ? OFFSET ?";
+        
         logger.sqlLog(query, createObjectArray(movieId, size, (page - 1) * size));
         try {
             return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(MovieComment.class), movieId, size, (page - 1) * size);
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+    }
+    
+    public int getCommentCount(int movieId) {
+        String query = "SELECT COUNT(*) FROM UserMovieComment WHERE movie_id = ?";
+        logger.sqlLog(query, createObjectArray(movieId));
+        try {
+            return jdbcTemplate.queryForObject(query, Integer.class, movieId);
+        } catch (Exception e) {
+            return 0;
         }
     }
 
@@ -272,5 +285,78 @@ public class MovieRepository {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public int getOnShowMovieCount() {
+        String query = "SELECT COUNT(*) FROM Movie WHERE release_date <= NOW()";
+        logger.sqlLog(query);
+
+        try {
+            return jdbcTemplate.queryForObject(query, Integer.class);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public List<Movie> checkFavoriteMovie(int userId, int movieId) {
+        String query = "SELECT COUNT(*) FROM FavoriteMovie WHERE movie_id = ? AND user_id = ?";
+        
+        logger.sqlLog(query, createObjectArray(movieId, userId));
+
+        int result = jdbcTemplate.queryForObject(query, Integer.class, movieId, userId);
+        
+        if (result > 0) {
+            return List.of(getMovieById(movieId));
+        }
+
+        return Collections.emptyList();
+    }
+    
+    public List<Movie> getUserFavoriteMovies(int userId) {
+        String query = "SELECT * FROM Movie m INNER JOIN FavoriteMovie f WHERE f.movie_id = m.movie_id AND f.user_id = ?";
+        
+        logger.sqlLog(query, createObjectArray(userId));
+        
+        try {
+            return jdbcTemplate.query(query, BeanPropertyRowMapper.newInstance(Movie.class), userId);
+        } catch (DataAccessException exception) {
+            return Collections.emptyList();
+        }
+        
+    }
+
+    public void addFavoriteMovie(int userId, int movieId) {
+        String query = "CALL create_favorite_movie(?, ?)";
+        logger.sqlLog(query, createObjectArray(userId, movieId));
+        jdbcTemplate.update(query, userId, movieId);
+    }
+    
+    public void deleteFavoriteMovie(int userId, int movieId) {
+        String query = "DELETE FROM FavoriteMovie WHERE user_id = ? AND movie_id = ?";
+        logger.sqlLog(query, createObjectArray(userId, movieId));
+        jdbcTemplate.update(query, userId, movieId);
+    }
+
+    public void addComment(int userId, MovieComment comment) {
+        String query = "CALL create_user_movie_comment(?, ?, ?)";
+        logger.sqlLog(query, createObjectArray(userId, comment.getMovieId(), comment.getComment()));
+        
+        jdbcTemplate.update(query, userId, comment.getMovieId(), comment.getComment());
+        
+    }
+    
+    public void deleteComment(int userId, int commentId) {
+        
+        String query = "SELECT COUNT(*) FROM UserMovieComment WHERE user_id = ? AND comment_id = ?";
+        logger.sqlLog(query, createObjectArray(userId, commentId));
+        
+        if (jdbcTemplate.queryForObject(query, Integer.class, userId, commentId) == 0) {
+            throw new IllegalArgumentException("User does not own this comment");
+        }
+        
+        
+        query = "DELETE FROM UserMovieComment WHERE comment_id = ?";
+        logger.sqlLog(query, createObjectArray(commentId));
+        jdbcTemplate.update(query, commentId);
     }
 }

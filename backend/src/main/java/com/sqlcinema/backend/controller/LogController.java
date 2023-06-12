@@ -18,7 +18,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class LogController {
     private final CustomLogger customLogger;
     private final ActivityManager activityService;
-
+    
     @GetMapping("/all")
     public ResponseEntity<List<Log>>
     getAllLogs() {
@@ -35,13 +35,13 @@ public class LogController {
     @GetMapping(path = {"/activity", "/activity/{userId}"})
     public ResponseEntity<List<Activity>> getActivities(@PathVariable(required = false, name = "userId") Integer userId,
                                                         @RequestParam(required = false, defaultValue = "1") int page,
-                                                        @RequestParam(required = false, defaultValue = "10") int pageSize) {
+                                                        @RequestParam(required = false, defaultValue = "10") int size) {
         
         userId = userId == null ? 0 : userId;
         if (userId < 0) {
             return ResponseEntity.badRequest().build();
         }
-        return ok(activityService.getActivities(userId, page, pageSize));
+        return ok(activityService.getActivities(userId, page, size));
     }
     
     @GetMapping(path = {"/activity/count", "/activity/count/{userId}"})

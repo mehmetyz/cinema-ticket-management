@@ -35,7 +35,6 @@ public class AccountController {
     
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-
         logger.info("Login request: " + loginRequest);
         UserAccount userAccount = userAccountService.getUserAccountByUsername(loginRequest.getUsername());
         
@@ -44,7 +43,7 @@ public class AccountController {
         }
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), userAccount.getPassword())) {
-            return badRequest().build();
+            return badRequest().build();    
         }
         
         userAccountService.loginUser(userAccount);

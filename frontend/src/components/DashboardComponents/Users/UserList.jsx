@@ -14,6 +14,7 @@ import { deleteUser, getUsers, updateUser } from '../../../api/user';
 import CustomDialog from '../../CustomDialog/CustomDialog';
 
 import dayjs from 'dayjs';
+import ReportDownload from '../../ReportDownload';
 
 const colors = {
   ADMIN: '#4C4C6D',
@@ -80,7 +81,34 @@ const UserList = () => {
 
   return (
     <>
-      <TableContainer component={Paper} sx={{ borderRadius: 2, backgroundColor: '#051d32', maxHeight: '100%' }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={10}>
+          <h3 style={{ color: '#fff' }}>User List</h3>
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <ReportDownload
+            dataHandler={getUsers().then((res) => res.data)}
+            sx={{
+              marginBottom: '10px',
+              position: 'relative',
+              width: '100%',
+            }}
+            map={(user) => {
+              return {
+                'Full Name': user.fullName,
+                Username: user.username,
+                Email: user.email,
+                'Phone Number': user.phoneNumber,
+                'Birth Date': user.birthDate ? new Date(user.birthDate).toLocaleDateString() : 'N/A',
+                'User Type': user.role.replace('_', ' '),
+              };
+            }}
+            txt="Download User List"
+          />
+        </Grid>
+      </Grid>
+
+      <TableContainer component={Paper} sx={{ borderRadius: 2, backgroundColor: '#051d32', maxHeight: '90%' }}>
         <Table sx={{ minWidth: 700 }} stickyHeader>
           <TableHead>
             <TableRow>

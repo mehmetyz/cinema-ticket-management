@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ActivityManager {
     
-    List<Activity> getActivities(int userId, int page, int pageSize);
+    List<Activity> getActivities(int userId, int page, int size);
     void addActivity(int userId, ActivityType type, String message);
     void deleteActivity(int activityId);
     

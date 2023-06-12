@@ -118,10 +118,10 @@ END $$
 
 CREATE PROCEDURE create_theatre (
     IN name VARCHAR(255),
-    IN is_available BOOLEAN
+    IN available BOOLEAN
 )
 BEGIN
-    INSERT INTO Theatre(name, is_available) VALUES(name, is_available);
+    INSERT INTO Theatre(name, available) VALUES(name, available);
 END $$
 
 CREATE PROCEDURE create_genre (
@@ -171,30 +171,21 @@ BEGIN
 END $$
 
 CREATE PROCEDURE create_ticket (
-    IN movie_name VARCHAR(255),
-    IN theatre_name VARCHAR(255),
+    IN movie_id VARCHAR(255),
+    IN theatre_id VARCHAR(255),
     IN show_time DATETIME,
     IN price FLOAT
 )
 
 BEGIN
-    DECLARE movie_id INT;
-    DECLARE theatre_id INT;
-
-    SELECT m.movie_id INTO movie_id FROM Movie m WHERE m.title = movie_name;
-    SELECT t.theatre_id INTO theatre_id FROM Theatre t WHERE t.name = theatre_name;
-
     INSERT INTO Ticket(movie_id, theatre_id, show_time, price) VALUES(movie_id, theatre_id, show_time, price);
 END $$
 
 CREATE PROCEDURE create_favorite_movie (
-    IN user_name VARCHAR(255),
+    IN user_id INT,
     IN movie_id INT
 )
 BEGIN
-    DECLARE user_id INT;
-    SELECT u.user_id INTO user_id FROM UserAccount u WHERE u.username = user_name;
-
     INSERT INTO FavoriteMovie(user_id, movie_id) VALUES(user_id, movie_id);
 END $$
 
@@ -217,14 +208,15 @@ END $$
     
 
 CREATE PROCEDURE create_seat (
-    IN theatre_name VARCHAR(100),
+    IN theatre_name VARCHAR(255),
     IN seat_code VARCHAR(10),
     IN seat_type VARCHAR(20)
 )
 BEGIN
-    DECLARE _theatre_id INT;
-    SELECT theatre_id INTO _theatre_id FROM Theatre WHERE name = theatre_name;
-    INSERT INTO Seat(theatre_id, seat_code, seat_type) VALUES(_theatre_id, seat_code, seat_type);
+    DECLARE theatre_id INT;
+    SELECT t.theatre_id INTO theatre_id FROM Theatre t WHERE t.name = theatre_name;
+
+    INSERT INTO Seat(theatre_id, seat_code, seat_type) VALUES(theatre_id, seat_code, seat_type);
 END $$
 
 CREATE PROCEDURE assign_movie_genre (
@@ -269,7 +261,7 @@ BEGIN
 
     IF discount_type = "AMOUNT" THEN
         INSERT INTO AmountCoupon(code, amount, min_price) VALUES(code, discount_size, discount_price_limit);
-    ELSEIF discount_type = "PERCENTAGE" THEN
+    ELSEIF discount_type = "PERCENT" THEN
         INSERT INTO PercentCoupon(code, rate, up_to) VALUES(code, discount_size, discount_price_limit);
     END IF;
 END $$
@@ -285,6 +277,7 @@ DROP PROCEDURE IF EXISTS update_manager;
 DROP PROCEDURE IF EXISTS update_ticket;
 DROP PROCEDURE IF EXISTS update_user_movie_comment;
 DROP PROCEDURE IF EXISTS update_coupon;
+DROP PROCEDURE IF EXISTS update_seat;
 
 DELIMITER $$
 
@@ -317,13 +310,24 @@ END $$
 CREATE PROCEDURE update_theatre (
     IN theatre_id INT,
     IN name VARCHAR(255),
-    IN is_available INT
+    IN available INT
 )
 BEGIN
     UPDATE Theatre t SET
         name = IFNULL(name, t.name),
-        is_available = IFNULL(is_available, t.is_available)
+        available = IFNULL(available, t.available)
     WHERE t.theatre_id = theatre_id;
+END $$
+
+CREATE PROCEDURE update_seat (
+    IN theatre_id INT,
+    IN seat_code VARCHAR(10),
+    IN seat_type VARCHAR(20)
+)
+BEGIN
+    UPDATE Seat S SET
+        S.seat_type = IFNULL(seat_type, S.seat_type)
+    WHERE S.theatre_id = theatre_id and S.seat_code=seat_code;
 END $$
 
 CREATE PROCEDURE update_user (
@@ -332,8 +336,7 @@ CREATE PROCEDURE update_user (
     IN username VARCHAR(255),
     IN avatar_name VARCHAR(100),
     IN phone_number VARCHAR(20),
-    IN birth_date DATE,
-    IN password VARCHAR(255)
+    IN birth_date DATE
 )
 BEGIN
     UPDATE User u SET
@@ -344,8 +347,7 @@ BEGIN
     WHERE u.user_id = user_id;
 
     UPDATE UserAccount ua SET
-        username = IFNULL(username, ua.username),
-        password = IFNULL(password, ua.password)
+        username = IFNULL(username, ua.username)
     WHERE ua.user_id = user_id;
 END $$
 
@@ -378,9 +380,9 @@ END $$
 
 CREATE PROCEDURE update_ticket (
     IN ticket_id INT,
-    IN price FLOAT,
-    IN show_time DATETIME,
-    IN theatre_id INT
+	IN theatre_id INT,
+	IN show_time DATETIME,
+    IN price FLOAT
 )
 BEGIN
     UPDATE Ticket t SET
@@ -424,7 +426,7 @@ BEGIN
             min_price = IFNULL(discount_price_limit, ac.min_price)
         WHERE ac.code = code;
         
-    ELSEIF discount_type = "PERCENTAGE" THEN
+    ELSEIF discount_type = "PERCENT" THEN
         UPDATE PercentCoupon pc SET
             rate = IFNULL(discount_size, pc.rate),
             up_to = IFNULL(discount_price_limit, pc.up_to)
@@ -433,6 +435,8 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
 -- DELETE
 DROP PROCEDURE IF EXISTS delete_user;
 DROP PROCEDURE IF EXISTS unassign_manager;
@@ -447,13 +451,22 @@ DROP PROCEDURE IF EXISTS delete_genre;
 DROP PROCEDURE IF EXISTS delete_movie_genre;
 DROP PROCEDURE IF EXISTS delete_activity;
 DROP PROCEDURE IF EXISTS delete_keyword_set;
+DROP PROCEDURE IF EXISTS delete_seat;
 
 DELIMITER $$
 CREATE PROCEDURE delete_user (
     IN user_id INT
 )
 BEGIN
-    DELETE FROM User u WHERE u.user_id = user_id;
+    UPDATE UserAccount ua SET ua.status = 'DELETED' WHERE ua.user_id = user_id;
+END $$
+
+CREATE PROCEDURE delete_seat (
+    IN theatre_id INT,
+    IN seat_code VARCHAR(10)
+)
+BEGIN
+    DELETE FROM Seat S WHERE S.theatre_id = theatre_id and S.seat_code=seat_code;
 END $$
 
 CREATE PROCEDURE unassign_manager (

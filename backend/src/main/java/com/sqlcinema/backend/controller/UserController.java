@@ -6,6 +6,7 @@ import com.sqlcinema.backend.model.Role;
 import com.sqlcinema.backend.model.User;
 import com.sqlcinema.backend.model.UserAccount;
 import com.sqlcinema.backend.model.activity.ActivityType;
+import com.sqlcinema.backend.model.request.NewPasswordRequest;
 import com.sqlcinema.backend.model.request.UserUpdateRequest;
 import com.sqlcinema.backend.model.response.UserResponse;
 import com.sqlcinema.backend.service.UserAccountService;
@@ -16,7 +17,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.sqlcinema.backend.common.Constants.getCurrentUser;
@@ -46,8 +49,6 @@ public class UserController {
                 return ResponseEntity.badRequest().build();
             }
         }
-
-        logger.info("User id: " + userId);
         User user = userService.getUserById(userId);
 
         if (user == null) {
@@ -84,13 +85,31 @@ public class UserController {
         }
         
         if (user.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            return ResponseEntity.badRequest().build();
         }
         
         userService.updateUser(userId, user);
         activityManager.addActivity(userId, ActivityType.UPDATE, "User profile was updated");
         return ResponseEntity.ok(user);
     }
+    
+    @PutMapping("/me/update-password")
+    public ResponseEntity<User> updatePassword(@RequestBody NewPasswordRequest request) {
+        UserAccount userAccount = getCurrentUser();
+        
+        if (!passwordEncoder.matches(request.getOldPassword(), userAccount.getPassword())) {
+            return ResponseEntity.badRequest().build();
+        }
+        
+        if (passwordEncoder.matches(request.getNewPassword(), userAccount.getPassword())) {
+            return ResponseEntity.ok().build();
+        }
+        
+        userService.updatePassword(userAccount.getUserId(), passwordEncoder.encode(request.getNewPassword()));
+        activityManager.addActivity(userAccount.getUserId(), ActivityType.UPDATE, "User password was updated");
+        return ResponseEntity.ok().build();
+    }
+    
 
     @DeleteMapping("/{userId}/delete")
     public ResponseEntity<User> deleteUser(@PathVariable int userId) {
@@ -110,4 +129,25 @@ public class UserController {
         }
         return ResponseEntity.ok().build();
     }
+    
+    
+    
+    @GetMapping(path = "/me/profile", produces = "image/png")
+    public ResponseEntity<byte[]> getProfile() {
+        UserAccount userAccount = getCurrentUser();
+        return ResponseEntity.ok(userService.getProfile(userAccount.getUserId()));
+    }
+
+    @PostMapping(path = "/me/profile")
+    public ResponseEntity<Void> uploadImage(@RequestParam("file") MultipartFile file) {
+        UserAccount userAccount =  getCurrentUser();
+        try {
+            userService.uploadImage(userAccount.getUserId(), file.getBytes());
+            activityManager.addActivity(userAccount.getUserId(), ActivityType.UPDATE, "User profile was updated");
+            return ResponseEntity.ok().build();
+        } catch (IOException ignored) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
 }

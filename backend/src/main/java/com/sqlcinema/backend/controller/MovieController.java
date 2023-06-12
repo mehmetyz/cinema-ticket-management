@@ -10,6 +10,7 @@ import com.sqlcinema.backend.model.movie.Person;
 import com.sqlcinema.backend.model.request.MovieRequest;
 import com.sqlcinema.backend.service.MovieService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -57,7 +58,12 @@ public class MovieController {
                                                        @RequestParam(defaultValue = "0") int genreId) {
         return ResponseEntity.ok(movieService.getNewestMovies(page, size, genreId));
     }
-
+    
+    @GetMapping("/onshow/count")
+    public ResponseEntity<Integer> getOnShowMovieCount() {
+        return ResponseEntity.ok(movieService.getOnShowMovieCount());
+    }
+    
     @GetMapping("/random")
     public ResponseEntity<Movie> randomMovie() {
         return ResponseEntity.ok(movieService.randomMovie());
@@ -85,9 +91,6 @@ public class MovieController {
     @PostMapping("/")                                                                   
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Movie> addMovie(@RequestBody MovieRequest movie) {
-
-        System.out.println("Movie: " + movie);
-        
         int movieId = movieService.addMovie(movie);
         activityManager.addActivity(getCurrentUser().getUserId(), 
                 ActivityType.CREATE, "Movie " + movie.getTitle() + " added");
@@ -125,7 +128,10 @@ public class MovieController {
                                                           @RequestParam(defaultValue = "1") int page,
                                                           @RequestParam(defaultValue = "10") int size) {
         List<MovieComment> res = movieService.getComments(movieId, page, size);
-        return ResponseEntity.ok(res);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Total-Count", String.valueOf(movieService.getCommentCount(movieId)));
+        return ResponseEntity.ok().headers(headers).body(res);
     }
     
     
@@ -134,4 +140,53 @@ public class MovieController {
         return ResponseEntity.ok(movieService.getKeywords(movieId));
     }
     
+    
+    @GetMapping("/favorites")
+    public ResponseEntity<List<Movie>> getFavoriteMovies( ) {
+        UserAccount account = getCurrentUser();
+        return ResponseEntity.ok(movieService.getUserFavoriteMovies(account.getUserId()));
+    }
+    
+    @PutMapping("/favorites")
+    public ResponseEntity<Void> addFavoriteMovie(@RequestParam(name = "movie_id") int movieId) {
+        UserAccount account = getCurrentUser();
+        movieService.addFavoriteMovie(account.getUserId(), movieId);
+        
+        activityManager.addActivity(account.getUserId(), 
+                ActivityType.FAVORITE, "Movie " + movieService.getMovie(movieId).getTitle() + " added to favorites");
+        
+        return ResponseEntity.ok().build();
+    }
+    
+    @DeleteMapping("/favorites")
+    public ResponseEntity<Void> deleteFavoriteMovie(@RequestParam(name = "movie_id") int movieId) {
+        UserAccount account = getCurrentUser();
+        movieService.deleteFavoriteMovie(account.getUserId(), movieId);
+        
+        activityManager.addActivity(account.getUserId(), 
+                ActivityType.UNFAVORITE, "Movie " + movieService.getMovie(movieId).getTitle() + " removed from favorites");
+        
+        return ResponseEntity.ok().build();
+    }
+    
+    
+    @PostMapping("/comments")
+    public ResponseEntity<MovieComment> addComment(@RequestBody MovieComment comment) {
+        UserAccount account = getCurrentUser();
+        movieService.addComment(account.getUserId(), comment);
+        
+        activityManager.addActivity(account.getUserId(), 
+                ActivityType.COMMENT, "Comment added to movie " + movieService.getMovie(comment.getMovieId()).getTitle());
+        return ResponseEntity.ok(comment);
+    }
+    
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") int commentId) {
+        UserAccount account = getCurrentUser();
+        movieService.deleteComment(account.getUserId(), commentId);
+        
+        activityManager.addActivity(account.getUserId(), 
+                ActivityType.DELETE, "User" + account.getUsername() + " deleted a comment");
+        return ResponseEntity.ok().build();
+    }
 }

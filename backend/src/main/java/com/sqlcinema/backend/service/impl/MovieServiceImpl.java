@@ -30,18 +30,18 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<Movie> getMovies(int page, int pageSize, int genreId) {
-        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.ID);
+    public List<Movie> getMovies(int page, int size, int genreId) {
+        return movieRepository.getMovies(page, size, genreId, MovieOrder.ID);
     }
 
     @Override
-    public List<Movie> getPopularMovies(int page, int pageSize, int genreId) {
-        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.POPULARITY.descending());
+    public List<Movie> getPopularMovies(int page, int size, int genreId) {
+        return movieRepository.getMovies(page, size, genreId, MovieOrder.POPULARITY.descending());
     }
 
     @Override
-    public List<Movie> getNewestMovies(int page, int pageSize, int genreId) {
-        return movieRepository.getMovies(page, pageSize, genreId, MovieOrder.RELEASE_DATE.descending());
+    public List<Movie> getNewestMovies(int page, int size, int genreId) {
+        return movieRepository.getMovies(page, size, genreId, MovieOrder.RELEASE_DATE.descending());
     }
 
     @Override
@@ -85,13 +85,54 @@ public class MovieServiceImpl implements MovieService {
    }
 
     @Override
-    public List<MovieComment> getComments(int movieId, int page, int pageSize) {
-        return movieRepository.getComments(movieId, page, pageSize);
+    public List<MovieComment> getComments(int movieId, int page, int size) {
+        return movieRepository.getComments(movieId, page, size);
         
+    }
+
+    @Override
+    public int getCommentCount(int movieId) {
+        return movieRepository.getCommentCount(movieId);
     }
 
     @Override
     public String getKeywords(int movieId) {
         return movieRepository.getKeywords(movieId);
     }
+
+    @Override
+    public int getOnShowMovieCount() {
+        return movieRepository.getOnShowMovieCount();
+    }
+
+    @Override
+    public List<Movie> checkFavoriteMovie(int userId, int movieId) {
+        return movieRepository.checkFavoriteMovie(userId, movieId);
+    }
+
+    @Override
+    public List<Movie> getUserFavoriteMovies(int userId) {
+        return movieRepository.getUserFavoriteMovies(userId);
+    }
+
+    @Override
+    public void addFavoriteMovie(int userId, int movieId) {
+        movieRepository.addFavoriteMovie(userId, movieId);
+    }
+
+    @Override
+    public void deleteFavoriteMovie(int userId, int movieId) {
+        movieRepository.deleteFavoriteMovie(userId, movieId);
+    }
+
+    @Override
+    public void addComment(int userId, MovieComment comment) {
+        movieRepository.addComment(userId, comment);
+    }
+
+    @Override
+    public void deleteComment(int userId, int commentId) {
+        movieRepository.deleteComment(userId, commentId);
+    }
+
 }

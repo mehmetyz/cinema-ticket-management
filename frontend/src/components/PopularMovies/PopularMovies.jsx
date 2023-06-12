@@ -35,7 +35,7 @@ const PopularMovies = ({ genres }) => {
   }, [filter]);
 
   return (
-    <Section id="movies" height="200vh" bgImage="/bg.jpg" opacity={0.6}>
+    <Section id="movies" height="200vh" sx={{ backgroundColor: '#00111f' }}>
       <Container maxWidth="m" sx={{ height: '100%', padding: '100px 0 0 0' }}>
         <Typography
           variant="h6"

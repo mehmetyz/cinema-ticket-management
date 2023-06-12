@@ -8,7 +8,6 @@ import NoPage from './pages/NoPage';
 import Authentication from './pages/Authentication';
 import Home from './pages/Home';
 import Movies from './pages/Movies';
-import Profile from './pages/Profile';
 import MovieDetails from './pages/MovieDetails';
 
 import Header from './components/Header';
@@ -24,6 +23,8 @@ import { addItem, loadAuthToken, loadUser } from './utils/localStorage';
 import './App.css';
 import Checkout from './pages/Checkout';
 import Dashboard from './pages/Dashboard/Dashboard';
+import FavoriteMovies from './pages/FavoriteMovies';
+import Reservations from './pages/Reservations';
 
 const routeWithAuth = (element, authElement) => {
   return (
@@ -98,7 +99,7 @@ function App() {
           replace: true,
         });
       } else {
-        context.showSnackBar('Login failed : ' + response, 'error');
+        context.showSnackBar('Login failed check username and password', 'error');
       }
     },
     logout: async () => {
@@ -131,6 +132,12 @@ function App() {
       const genres = await getGenres();
       genres.push({ genreId: 0, name: 'All' });
 
+      genres.sort((a, b) => {
+        if (a.genreId === 0) return -1;
+        if (b.genreId === 0) return 1;
+        return a.name > b.name ? 1 : -1;
+      });
+
       produceContext(setContext, (draft) => {
         draft.genres = genres;
       });
@@ -149,16 +156,17 @@ function App() {
   return (
     <>
       <ApplicationContext.Provider value={context}>
-        {location.pathname !== '/dashboard' ? <Header />  : null}
+        {location.pathname !== '/dashboard' ? <Header /> : null}
         <Routes>
           <Route path="/" element={<Home />} exact />
           <Route path="/login" element={routeWithAuth(<Authentication login />, <Home />)} />
           <Route path="/register" element={routeWithAuth(<Authentication />, <Home />)} />
-          <Route path="/profile" element={routeWithAuth(<Authentication login />, <Profile />)} />
-          <Route path="/checkout" element={routeWithAuth(<Authentication login />, <Checkout />)} />
+          <Route path="/checkout/:id" element={routeWithAuth(<Authentication login />, <Checkout />)} />
 
           <Route path="/movies" element={<Movies />} />
           <Route path="/movies/:id" element={<MovieDetails />} />
+          <Route path="/favorites" element={routeWithAuth(<Authentication login />, <FavoriteMovies />)} />
+          <Route path="/reservations" element={routeWithAuth(<Authentication login />, <Reservations />)} />
 
           {loadUser() && loadUser().role.toLowerCase() !== 'user' && <Route path="/dashboard" element={<Dashboard />} />}
           <Route path="*" element={<NoPage />} />

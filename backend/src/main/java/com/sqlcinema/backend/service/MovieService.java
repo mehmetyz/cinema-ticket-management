@@ -11,9 +11,9 @@ import java.util.List;
 public interface MovieService {
     List<Genre> getGenres();
     Movie getMovie(int id);
-    List<Movie> getMovies(int page, int pageSize, int genreId);
-    List<Movie> getPopularMovies(int page, int pageSize, int genreId);
-    List<Movie> getNewestMovies(int page, int pageSize, int genreId);
+    List<Movie> getMovies(int page, int size, int genreId);
+    List<Movie> getPopularMovies(int page, int size, int genreId);
+    List<Movie> getNewestMovies(int page, int size, int genreId);
 
     List<Movie> searchMovies(int page, int size, String query);
     
@@ -32,7 +32,22 @@ public interface MovieService {
     List<Person> getCast(int movieId);
     
     List<MovieComment> getComments(int movieId, int page, int size);
+    int getCommentCount(int movieId);
 
     String getKeywords(int movieId);
+
+
+    int getOnShowMovieCount();
+
+    List<Movie> checkFavoriteMovie(int userId, int movieId);
+
+    List<Movie> getUserFavoriteMovies(int userId);
+
+    void addFavoriteMovie(int userId, int movieId);
+
+    void deleteFavoriteMovie(int userId, int movieId);
+
+    void addComment(int userId, MovieComment comment);
+    void deleteComment(int userId, int commentId);
 }
                                                         
